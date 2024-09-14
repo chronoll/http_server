@@ -1,10 +1,28 @@
 <?php
 
-$data = file_get_contents('php://input');
+if (isset($_POST['MESSAGE'])) {
+    $message = $_POST['MESSAGE'];
+}
 
-$file = 'data.txt';
-file_put_contents($file, $data);
+if (isset($_POST['SENDER'])) {
+    $sender = $_POST['SENDER'];
+}
 
-echo "Data received to $file";
+if (isset($_POST['RECEIVER'])) {
+    $receiver = $_POST['RECEIVER'];
+}
+
+try {
+    $dbh = new PDO('mysql:dbname=chat;host=localhost;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
+
+    $sql = 'INSERT INTO messages (content, sender, receiver) VALUES (:message, :sender, :receiver)';
+    $stmt = $dbh->prepare($sql);
+    $stmt->bindParam(':message', $message);
+    $stmt->bindParam(':sender', $sender);
+    $stmt->bindParam(':receiver', $receiver);
+    $stmt->execute();
+} catch (PDOException $e) {
+    echo 'Connection failed: ' . $e->getMessage();
+}
 
 ?>
