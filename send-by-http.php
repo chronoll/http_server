@@ -16,18 +16,10 @@ if (file_exists($filename)) {
     // header('Expires: 0');
     // header('Cache-Control: must-revalidate');
     // header('Pragma: public');
-    header('Content-Length: ' . filesize($filename));
+    // header('Content-Length: ' . filesize($filename));
     
-    // バイナリモードで開く
-    $fp = fopen($filename, 'rb');
-
-    if ($fp) {
-        // ファイル内容を出力
-        fpassthru($fp);
-        fclose($fp);
-    } else {
-        echo "File not found.";
-    }
+    // ファイルをバイナリモードで開いて送信
+    readfile($filename);
     exit;
 
 } else {
