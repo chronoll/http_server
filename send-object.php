@@ -5,6 +5,7 @@ include 'handler.php';
 if (isset($_GET['ID'])) {
     $client_id = $_GET['ID'];
 } else {
+    http_response_code(400); // Bad Request
     echo "No client_id specified.";
     exit;
 }
@@ -28,12 +29,16 @@ if (file_exists($filename)) {
         fpassthru($fp);
         fclose($fp);
     } else {
-        echo "File not found.";
+        http_response_code(500); // Internal Server Error
+        echo "バイナリファイルを開けませんでした" . htmlspecialchars($filename);
+        exit;
     }
     exit;
 
 } else {
-    echo "filename not found.";
+    http_response_code(500); // Internal Server Error
+    echo "DBから取得したファイル名が不正です" . htmlspecialchars($filename);
+    exit;
 }
 
 ?>

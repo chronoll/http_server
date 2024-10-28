@@ -14,7 +14,10 @@ function processProgram($client_id) {
         // レコードが存在しない場合、ロールバックしてnullを返す
         if (!$result) {
             $pdo->rollBack();
-            return null;
+            // return null;
+            http_response_code(404);
+            echo "No Programs to distribute.";
+            exit;
         }
 
         $program_id = $result['id'];
@@ -41,10 +44,10 @@ function processProgram($client_id) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
+        http_response_code(500); // Internal Server Error
         echo 'Transaction failed: ' . $e->getMessage();
         return null;
     } finally {
-        // PDO接続を閉じる
         $pdo = null;
     }
 }
