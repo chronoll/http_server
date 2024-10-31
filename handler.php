@@ -6,7 +6,7 @@ function processProgram($client_id) {
         $pdo->beginTransaction();
 
         // status=0の中で最もIDが小さいレコードを取得
-        $sql = "SELECT * FROM programs WHERE status = 0 ORDER BY id ASC LIMIT 1";
+        $sql = "SELECT * FROM programs WHERE status = 0 ORDER BY id ASC LIMIT 1 FOR UPDATE";
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
