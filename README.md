@@ -3,3 +3,7 @@ HTTPで送信される値を使ってMySQLにアクセスするPHPのスクリ�
 
 send-object.php
 /objectsに格納されたバイナリを指定して開く
+DBから開くファイル名をもらう
+
+handler.php
+DB操作関数
