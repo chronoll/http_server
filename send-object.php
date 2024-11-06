@@ -10,8 +10,11 @@ if (isset($_GET['ID'])) {
     exit;
 }
 
-$result = processProgram($client_id);
-$filename = $result['filename'];
+// $result = processProgram($client_id);
+// $filename = $result['filename'];
+
+$result = processMatrix($client_id);
+$filename = "objects/matrix";
 
 if (file_exists($filename)) {
     // バッファリングをオフ
@@ -20,6 +23,7 @@ if (file_exists($filename)) {
     }
 
     header('Content-Length: ' . filesize($filename));
+    header('MPI-Rank: ' . $result['rank']);
     
     // バイナリモードで開く
     $fp = fopen($filename, 'rb');
