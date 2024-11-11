@@ -103,4 +103,23 @@ function processMatrix($client_id) {
         $pdo = null;
     }
 }
+
+function saveProgress($client_id, $status) {
+    try {
+        $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
+
+        $sql = "UPDATE progress SET status = :status WHERE client_id = :client_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':client_id', $client_id);
+        $stmt->bindParam(':status', $status);
+        $stmt->execute();
+
+    } catch(PDOException $e) {
+        http_response_code(500); // Internal Server Error
+        echo 'Connection failed: ' . $e->getMessage();
+    } finally {
+        $pdo = null;
+        return null;
+    }
+}
 ?>
