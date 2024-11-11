@@ -79,12 +79,13 @@ function processMatrix($client_id) {
         $stmt->bindParam(':rank_id', $rank_id);
         $stmt->execute();
 
-        // // progressテーブルに新規レコードを挿入
-        // $sql = "INSERT INTO progress (client_id, program_id, status) VALUES (:client_id, :program_id, 0)";
-        // $stmt = $pdo->prepare($sql);
-        // $stmt->bindParam(':client_id', $client_id);
-        // $stmt->bindParam(':program_id', $program_id);
-        // $stmt->execute();
+        // progressテーブルに新規レコードを挿入
+        // 配布直後: status=0
+        $sql = "INSERT INTO progress (client_id, program_id, rank, status) VALUES (:client_id, 6, :rank, 0)"; // 6 is the ID of the matrix program
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':client_id', $client_id);
+        $stmt->bindParam(':rank', $rank_id);
+        $stmt->execute();
 
         $pdo->commit();
 
