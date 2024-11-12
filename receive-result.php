@@ -13,6 +13,8 @@ if (isset($_GET['ID']) && isset($_GET['GROUP']) && isset($_GET['RANK'])) {
 
 // ファイルを保存するディレクトリ
 $uploadDir = "uploads/";
+$groupDir = $group_id . "/";
+$fullDir = $uploadDir . $groupDir;
 $filename = $_SERVER['HTTP_X_FILENAME'] ?? 'default.txt';
 $filename = $group_id . "_" . $rank . "_" . $_SERVER['HTTP_X_FILENAME'];
 
@@ -21,10 +23,17 @@ $filename = $group_id . "_" . $rank . "_" . $_SERVER['HTTP_X_FILENAME'];
 //     mkdir($uploadDir, 0777, true);
 // }
 
+// groupDirが存在しない場合は作成
+if (!is_dir($fullDir)) {
+    mkdir($fullDir, 0777, true);
+}
+
 chmod($uploadDir, 0777);
+chmod($fullDir, 0777);
 
 // ファイルのフルパス
-$filepath = $uploadDir . $filename;
+// $filepath = $uploadDir . $filename;
+$filepath = $fullDir . $filename;
 
 // php://input からファイル内容を読み込む
 $data = file_get_contents("php://input");
