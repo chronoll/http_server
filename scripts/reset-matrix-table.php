@@ -4,8 +4,12 @@ $RANK = 3;
 try {
     $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
-    // テーブルのレコードを削除して、AUTO_INCREMENT をリセット
+    // matrixレコードを削除, AUTO_INCREMENT をリセット
     $sql = "TRUNCATE TABLE matrix";
+    $pdo->exec($sql);
+
+    // progressレコードを削除, AUTO_INCREMENT をリセット
+    $sql = "TRUNCATE TABLE progress";
     $pdo->exec($sql);
 
     // トランザクションの開始
@@ -28,5 +32,18 @@ try {
     // エラー時にはロールバック
     $pdo->rollBack();
     echo "Error: " . $e->getMessage();
+}
+
+$directory = '../uploads/';
+
+// ディレクトリ内のすべてのファイルを取得
+$files = glob($directory . '*');
+
+// ファイルを一つずつ削除
+foreach ($files as $file) {
+    if (is_file($file)) {
+        unlink($file);
+        echo "Deleted: " . htmlspecialchars($file) . "<br>";
+    }
 }
 ?>
