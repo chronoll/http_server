@@ -1,8 +1,10 @@
 <?php
 include 'handler.php';
 
-if (isset($_GET['ID'])) {
+if (isset($_GET['ID']) && isset($_GET['GROUP']) && isset($_GET['RANK'])) {
     $client_id = $_GET['ID'];
+    $group_id = $_GET['GROUP'];
+    $rank = $_GET['RANK'];
 } else {
     http_response_code(400); // Bad Request
     echo "No client_id specified.";
@@ -12,6 +14,7 @@ if (isset($_GET['ID'])) {
 // ファイルを保存するディレクトリ
 $uploadDir = "uploads/";
 $filename = $_SERVER['HTTP_X_FILENAME'] ?? 'default.txt';
+$filename = $group_id . "_" . $rank . "_" . $_SERVER['HTTP_X_FILENAME'];
 
 // // ディレクトリが存在しない場合は作成
 // if (!is_dir($uploadDir)) {
