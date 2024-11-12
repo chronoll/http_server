@@ -39,7 +39,7 @@ if ($data === false || strlen($data) === 0) {
 if (file_put_contents($filepath, $data) !== false) {
     http_response_code(200);
     echo "File saved successfully: " . htmlspecialchars($filepath);
-    saveProgress($client_id, 1); // 1 is the status code for "file received"
+    saveProgress($rank, $group_id, 1); // 1 is the status code for "file received"
 } else {
     http_response_code(500);
     echo "Failed to save file.";

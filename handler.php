@@ -107,13 +107,14 @@ function processMatrix($client_id) {
     }
 }
 
-function saveProgress($client_id, $status) {
+function saveProgress($rank, $group_id, $status) {
     try {
         $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
-        $sql = "UPDATE progress SET status = :status WHERE client_id = :client_id";
+        $sql = "UPDATE progress SET status = :status WHERE rank = :rank AND group_id = :group_id";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':client_id', $client_id);
+        $stmt->bindParam(':rank', $rank);
+        $stmt->bindParam(':group_id', $group_id);
         $stmt->bindParam(':status', $status);
         $stmt->execute();
 
