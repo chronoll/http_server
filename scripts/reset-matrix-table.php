@@ -36,14 +36,30 @@ try {
 
 $directory = '../uploads/';
 
-// ディレクトリ内のすべてのファイルを取得
-$files = glob($directory . '*');
+if (!is_dir($directory)) {
+    echo "Error: $directory is not a directory.\n";
+    return;
+}
 
-// ファイルを一つずつ削除
+// メインディレクトリ内のすべてのファイルを削除
+$files = glob($directory . '/*');
 foreach ($files as $file) {
     if (is_file($file)) {
         unlink($file);
-        echo "Deleted: " . htmlspecialchars($file) . "<br>";
+        echo "Deleted file: $file\n";
+    } elseif (is_dir($file)) {
+        // サブディレクトリ内のすべてのファイルを削除
+        $subFiles = glob($file . '/*');
+        foreach ($subFiles as $subFile) {
+            if (is_file($subFile)) {
+                unlink($subFile);
+                echo "Deleted file: $subFile\n";
+            }
+        }
+        // サブディレクトリ自体を削除
+        rmdir($file);
+        echo "Deleted subdirectory: $file\n";
     }
 }
+
 ?>
