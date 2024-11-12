@@ -71,20 +71,23 @@ function processMatrix($client_id) {
             exit;
         }
 
-        $rank_id = $result['id'];
+        $matrix_id = $result['id'];
+        $rank = $result['rank'];
+        $group_id = $result['group_id'];
 
         // matrixテーブルのstatusを1に更新
-        $sql = "UPDATE matrix SET status = 1 WHERE id = :rank_id";
+        $sql = "UPDATE matrix SET status = 1 WHERE id = :matrix_id";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':rank_id', $rank_id);
+        $stmt->bindParam(':matrix_id', $matrix_id);
         $stmt->execute();
 
         // progressテーブルに新規レコードを挿入
         // 配布直後: status=0
-        $sql = "INSERT INTO progress (client_id, program_id, rank, status) VALUES (:client_id, 6, :rank, 0)"; // 6 is the ID of the matrix program
+        $sql = "INSERT INTO progress (client_id, program_id, rank, group_id, status) VALUES (:client_id, 6, :rank, :group_id, 0)"; // 6 is the ID of the matrix program
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':client_id', $client_id);
-        $stmt->bindParam(':rank', $rank_id);
+        $stmt->bindParam(':rank', $rank);
+        $stmt->bindParam(':group_id', $group_id);
         $stmt->execute();
 
         $pdo->commit();
