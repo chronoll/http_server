@@ -72,8 +72,6 @@ function processMatrix($client_id) {
         }
 
         $matrix_id = $result['id'];
-        $rank = $result['rank'];
-        $group_id = $result['group_id'];
 
         // matrixテーブルのstatusを1に更新
         $sql = "UPDATE matrix SET status = 1 WHERE id = :matrix_id";
@@ -83,11 +81,11 @@ function processMatrix($client_id) {
 
         // progressテーブルに新規レコードを挿入
         // 配布直後: status=0
-        $sql = "INSERT INTO progress (client_id, program_id, rank, group_id, status) VALUES (:client_id, 6, :rank, :group_id, 0)"; // 6 is the ID of the matrix program
+        $sql = "INSERT INTO progress (client_id, program_id, matrix_id, status) VALUES (:client_id, 6, :matrix_id, 0)"; // 6 is the ID of the matrix program
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':client_id', $client_id);
-        $stmt->bindParam(':rank', $rank);
-        $stmt->bindParam(':group_id', $group_id);
+        $stmt->bindParam(':matrix_id', $matrix_id);
+
         $stmt->execute();
 
         $pdo->commit();
@@ -107,14 +105,13 @@ function processMatrix($client_id) {
     }
 }
 
-function saveProgress($rank, $group_id, $status) {
+function saveProgress($matrix_id, $status) {
     try {
         $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
-        $sql = "UPDATE progress SET status = :status WHERE rank = :rank AND group_id = :group_id";
+        $sql = "UPDATE progress SET status = :status WHERE matrix_id = :matrix_id";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':rank', $rank);
-        $stmt->bindParam(':group_id', $group_id);
+        $stmt->bindParam(':matrix_id', $matrix_id);
         $stmt->bindParam(':status', $status);
         $stmt->execute();
 

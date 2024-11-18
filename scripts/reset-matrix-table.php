@@ -4,13 +4,19 @@ $RANK = 3;
 try {
     $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
-    // matrixレコードを削除, AUTO_INCREMENT をリセット
+    // 外部キー制約を無効化
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+
+    // matrix レコードを削除, AUTO_INCREMENT をリセット
     $sql = "TRUNCATE TABLE matrix";
     $pdo->exec($sql);
 
-    // progressレコードを削除, AUTO_INCREMENT をリセット
+    // progress レコードを削除, AUTO_INCREMENT をリセット
     $sql = "TRUNCATE TABLE progress";
     $pdo->exec($sql);
+
+    // 外部キー制約を再び有効化
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
     // トランザクションの開始
     $pdo->beginTransaction();
