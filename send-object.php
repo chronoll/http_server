@@ -24,6 +24,7 @@ if (file_exists($filename)) {
 
     header('Content-Length: ' . filesize($filename));
     header('MPI-Rank: ' . $result['rank']);
+    header('Group-ID: ' . $result['group_id']);
     header('Matrix-ID: ' . $result['id']); // matrixテーブルのid
     
     // バイナリモードで開く

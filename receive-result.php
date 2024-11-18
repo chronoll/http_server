@@ -1,8 +1,9 @@
 <?php
 include 'handler.php';
 
-if (isset($_GET['ID']) && isset($_GET['RANK']) && isset($_GET['MATRIX_ID'])) {
+if (isset($_GET['ID']) && isset($_GET['GROUP']) && isset($_GET['RANK']) && isset($_GET['MATRIX_ID'])) {
     $client_id = $_GET['ID'];
+    $group_id = $_GET['GROUP'];
     $rank = $_GET['RANK'];
     $matrix_id = $_GET['MATRIX_ID'];
 } else {
