@@ -75,16 +75,25 @@ function saveProgress($matrix_id, $status) {
         $stmt->bindParam(':status', $status);
         $stmt->execute();
 
-        // 2. matrix テーブルの全レコードの status チェック
-        $checkSql = "SELECT COUNT(*) AS total, SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) AS completed 
-                     FROM matrix"; // TODO: テーブル名を変数にする
+        // 2. matrix テーブルのステータスを確認
+        $checkSql = "SELECT 
+                        COUNT(*) AS total, 
+                        SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END) AS has_zero,
+                        SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) AS has_two
+                     FROM matrix";
         $checkStmt = $pdo->query($checkSql);
         $result = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
-        // 全レコードが status = 2 であれば、table_registry の更新
-        if ($result['total'] > 0 && $result['total'] == $result['completed']) {
-            $updateRegistrySql = "UPDATE table_registry SET status = 2 WHERE table_name = 'matrix'";
-            $pdo->exec($updateRegistrySql);
+        // 3. 条件に応じて table_registry の更新
+        if ($result['total'] > 0) {
+            if ($result['has_zero'] == 0) { // 0 がない場合
+                if ($result['has_two'] == $result['total']) { // 全てが 2 の場合
+                    $updateRegistrySql = "UPDATE table_registry SET status = 3 WHERE table_name = 'matrix'";
+                } else { // 0 がなく、2 以外もある場合
+                    $updateRegistrySql = "UPDATE table_registry SET status = 2 WHERE table_name = 'matrix'";
+                }
+                $pdo->exec($updateRegistrySql);
+            }
         }
 
         // トランザクションのコミット
@@ -101,3 +110,4 @@ function saveProgress($matrix_id, $status) {
         return null;
     }
 }
+
