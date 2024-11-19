@@ -109,7 +109,8 @@ function saveProgress($matrix_id, $status) {
     try {
         $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
-        $sql = "UPDATE progress SET status = :status WHERE matrix_id = :matrix_id";
+        // $sql = "UPDATE progress SET status = :status WHERE matrix_id = :matrix_id";
+        $sql = "UPDATE matrix SET status = :status WHERE id = :matrix_id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':matrix_id', $matrix_id);
         $stmt->bindParam(':status', $status);
@@ -123,4 +124,5 @@ function saveProgress($matrix_id, $status) {
         return null;
     }
 }
+
 ?>

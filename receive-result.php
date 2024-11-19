@@ -49,7 +49,7 @@ if ($data === false || strlen($data) === 0) {
 if (file_put_contents($filepath, $data) !== false) {
     http_response_code(200);
     echo "File saved successfully: " . htmlspecialchars($filepath);
-    saveProgress($matrix_id, 1); // 1 is the status code for "file received"
+    saveProgress($matrix_id, 2); // 2 is the status code for "file received" in the matrix table
 } else {
     http_response_code(500);
     echo "Failed to save file.";
