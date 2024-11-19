@@ -18,6 +18,10 @@ try {
     // 外部キー制約を再び有効化
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
+    // table_registryのstatusを0に更新
+    $sql = "UPDATE table_registry SET status = 0";
+    $pdo->exec($sql);
+
     // トランザクションの開始
     $pdo->beginTransaction();
 
