@@ -7,9 +7,17 @@ try {
     // 外部キー制約を無効化
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
 
-    // matrix レコードを削除, AUTO_INCREMENT をリセット
-    $sql = "TRUNCATE TABLE matrix";
-    $pdo->exec($sql);
+    // table_registry からすべての table_name を取得
+    $sql = "SELECT table_name FROM table_registry";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $table_names = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    // 各 table_name に対して TRUNCATE TABLE を実行
+    foreach ($table_names as $table_name) {
+        $truncateSql = "TRUNCATE TABLE `$table_name`";
+        $pdo->exec($truncateSql);
+    }
 
     // progress レコードを削除, AUTO_INCREMENT をリセット
     $sql = "TRUNCATE TABLE progress";
@@ -26,11 +34,13 @@ try {
     $pdo->beginTransaction();
 
     // 複数の `INSERT` 文を実行
-    for ($group_id = 1; $group_id <= $GROUP; $group_id++) {
-        for ($rank = 0; $rank < $RANK; $rank++) {
-            $sql = "INSERT INTO matrix (group_id, rank) VALUES (?, ?)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$group_id, $rank]);
+    foreach ($table_names as $table_name) {
+        for ($group_id = 1; $group_id <= $GROUP; $group_id++) {
+            for ($rank = 0; $rank < $RANK; $rank++) {
+                $sql = "INSERT INTO `$table_name` (group_id, rank) VALUES (?, ?)";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$group_id, $rank]);
+            }
         }
     }
 
