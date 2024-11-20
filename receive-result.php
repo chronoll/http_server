@@ -1,11 +1,12 @@
 <?php
 include 'handler.php';
 
-if (isset($_GET['ID']) && isset($_GET['GROUP']) && isset($_GET['RANK']) && isset($_GET['MATRIX_ID'])) {
+if (isset($_GET['ID']) && isset($_GET['GROUP']) && isset($_GET['RANK']) && isset($_GET['JOB_ID']) && isset($_GET['SUB_JOB_ID'])) {
     $client_id = $_GET['ID'];
     $group_id = $_GET['GROUP'];
     $rank = $_GET['RANK'];
-    $matrix_id = $_GET['MATRIX_ID'];
+    $job_id = $_GET['JOB_ID'];
+    $sub_job_id = $_GET['SUB_JOB_ID'];
 } else {
     http_response_code(400); // Bad Request
     echo "No client_id specified.";
@@ -49,7 +50,7 @@ if ($data === false || strlen($data) === 0) {
 if (file_put_contents($filepath, $data) !== false) {
     http_response_code(200);
     echo "File saved successfully: " . htmlspecialchars($filepath);
-    saveProgress($matrix_id, 2); // 2 is the status code for "file received" in the matrix table
+    updateStatus($job_id, $sub_job_id);
 } else {
     http_response_code(500);
     echo "Failed to save file.";
