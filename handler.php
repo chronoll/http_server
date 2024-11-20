@@ -4,11 +4,11 @@ function distributeJob($client_id) {
         $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
         $pdo->beginTransaction();
 
-        // status=0, 1の中で最もIDが小さいジョブを取得
-        $sql = "SELECT * FROM table_registry WHERE status <= 1 ORDER BY id ASC LIMIT 1 FOR UPDATE";
+        // status=0, 1のジョブをIDの昇順で取得
+        $sql = "SELECT * FROM table_registry WHERE status <= 1 ORDER BY id ASC FOR UPDATE";
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
-        $table_registry_record = $stmt->fetch(PDO::FETCH_ASSOC);
+        $table_registry_record = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // レコードが存在しない場合、ロールバックしてnullを返す
         if (!$table_registry_record) {
@@ -18,15 +18,25 @@ function distributeJob($client_id) {
             exit;
         }
 
-        $job_id = $table_registry_record["id"];
-        $table_name = $table_registry_record["table_name"];
-        $filename = $table_registry_record["filename"];
-
-        // 指定テーブルにおいて、status=0の中で最もIDが小さいレコードを取得
-        $sql = "SELECT * FROM `$table_name` WHERE status = 0 ORDER BY id ASC LIMIT 1 FOR UPDATE";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute();
-        $job_table_record = $stmt->fetch(PDO::FETCH_ASSOC);
+        // 取得ジョブのテーブルを昇順に走査して、status=0のサブジョブがあれば返却
+        foreach ($table_registry_record as $job) {
+            $search_table_name = $job["table_name"];
+            $sql = "SELECT * FROM `$search_table_name` WHERE status = 0 ORDER BY id ASC LIMIT 1 FOR UPDATE";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute();
+            $job_table_record = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($job_table_record) {
+                // table_registryからの情報
+                $job_id = $job['id'];
+                $table_name = $job['table_name'];
+                $filename = $job['filename'];
+                // ジョブテーブルからの情報
+                $sub_job_id = $job_table_record['id'];
+                $rank = $job_table_record['rank'];
+                $group_id = $job_table_record['group_id'];
+                break;
+            }
+        }
 
         // レコードが存在しない場合、ロールバックしてnullを返す
         if (!$job_table_record) {
@@ -35,10 +45,6 @@ function distributeJob($client_id) {
             echo "No Sub-Job to distribute.";
             exit;
         }
-
-        $sub_job_id = $job_table_record['id'];
-        $rank = $job_table_record['rank'];
-        $group_id = $job_table_record['group_id'];
 
         // jobテーブルのstatusを1に更新
         $sql = "UPDATE `$table_name` SET status = 1 WHERE id = :sub_job_id";
