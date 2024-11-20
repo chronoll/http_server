@@ -15,23 +15,24 @@ if (isset($_GET['ID']) && isset($_GET['GROUP']) && isset($_GET['RANK']) && isset
 
 // ファイルを保存するディレクトリ
 $uploadDir = "uploads/";
-$groupDir = $group_id . "/";
-$fullDir = $uploadDir . $groupDir;
+$jobDir = $job_id . "/";     // $job_idのディレクトリ
+$groupDir = $group_id . "/"; // $group_idのディレクトリ
+$fullDir = $uploadDir . $jobDir . $groupDir; // 完全なディレクトリパス
 $filename = $_SERVER['HTTP_X_FILENAME'] ?? 'default.txt';
-$filename = $group_id . "_" . $rank . "_" . $_SERVER['HTTP_X_FILENAME'];
+$filename = $group_id . "_" . $rank . "_" . $filename;
 
-// // ディレクトリが存在しない場合は作成
-// if (!is_dir($uploadDir)) {
-//     mkdir($uploadDir, 0777, true);
-// }
-
-// groupDirが存在しない場合は作成
+// 必要なディレクトリを作成
 if (!is_dir($fullDir)) {
     mkdir($fullDir, 0777, true);
 }
 
+// パーミッションの設定
 chmod($uploadDir, 0777);
-chmod($fullDir, 0777);
+chmod($uploadDir . $jobDir, 0777); // $job_idのディレクトリ
+chmod($fullDir, 0777);            // $group_idのディレクトリ
+
+// ファイルのフルパス
+$filepath = $fullDir . $filename;
 
 // ファイルのフルパス
 // $filepath = $uploadDir . $filename;

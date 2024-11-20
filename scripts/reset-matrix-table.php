@@ -54,32 +54,30 @@ try {
     echo "Error: " . $e->getMessage();
 }
 
-$directory = '../uploads/';
-
-if (!is_dir($directory)) {
-    echo "Error: $directory is not a directory.\n";
-    return;
-}
-
-// メインディレクトリ内のすべてのファイルを削除
-$files = glob($directory . '/*');
-foreach ($files as $file) {
-    if (is_file($file)) {
-        unlink($file);
-        echo "Deleted file: $file\n";
-    } elseif (is_dir($file)) {
-        // サブディレクトリ内のすべてのファイルを削除
-        $subFiles = glob($file . '/*');
-        foreach ($subFiles as $subFile) {
-            if (is_file($subFile)) {
-                unlink($subFile);
-                echo "Deleted file: $subFile\n";
-            }
-        }
-        // サブディレクトリ自体を削除
-        rmdir($file);
-        echo "Deleted subdirectory: $file\n";
+function deleteDirectoryRecursively($directory) {
+    if (!is_dir($directory)) {
+        echo "The path is not a directory: $directory\n";
+        return;
     }
+
+    // ディレクトリ内のすべてのファイルとサブディレクトリを取得
+    $items = glob($directory . '/*');
+    foreach ($items as $item) {
+        if (is_file($item)) {
+            // ファイルを削除
+            unlink($item);
+            echo "Deleted file: $item\n";
+        } elseif (is_dir($item)) {
+            // サブディレクトリを再帰的に削除
+            deleteDirectoryRecursively($item);
+        }
+    }
+
+    // 最終的に空になったディレクトリ自体を削除
+    rmdir($directory);
+    echo "Deleted directory: $directory\n";
 }
+
+deleteDirectoryRecursively('../uploads/.');
 
 ?>
