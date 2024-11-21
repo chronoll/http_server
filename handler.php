@@ -6,11 +6,11 @@ function distributeJob($client_id) {
         $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
         $pdo->beginTransaction();
 
-        // status=0, 1のジョブをIDの昇順で取得
-        $sql = "SELECT * FROM table_registry WHERE status IN (:status0, :status1) ORDER BY id ASC FOR UPDATE";
+        // status=NoDistributed, DistributionStartedのジョブをIDの昇順で取得
+        $sql = "SELECT * FROM table_registry WHERE status IN (:NoDistributed, :DistributionStarted) ORDER BY id ASC FOR UPDATE";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':status0', JobStatus::NoDistributed->value, PDO::PARAM_INT);
-        $stmt->bindValue(':status1', JobStatus::DistributionStarted->value, PDO::PARAM_INT);
+        $stmt->bindValue(':NoDistributed', JobStatus::NoDistributed->value, PDO::PARAM_INT);
+        $stmt->bindValue(':DistributionStarted', JobStatus::DistributionStarted->value, PDO::PARAM_INT);
         $stmt->execute();
         $table_registry_record = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -22,12 +22,12 @@ function distributeJob($client_id) {
             exit;
         }
 
-        // 取得ジョブのテーブルを昇順に走査して、status=0のサブジョブがあれば返却
+        // 取得ジョブのテーブルを昇順に走査して、status=NotDistributedのサブジョブがあれば返却
         foreach ($table_registry_record as $job) {
             $search_table_name = $job["table_name"];
-            $sql = "SELECT * FROM `$search_table_name` WHERE status = :status ORDER BY id ASC LIMIT 1 FOR UPDATE";
+            $sql = "SELECT * FROM `$search_table_name` WHERE status = :NotDistributed ORDER BY id ASC LIMIT 1 FOR UPDATE";
             $stmt = $pdo->prepare($sql);
-            $stmt->bindValue(':status', SubJobStatus::NotDistributed->value, PDO::PARAM_INT);
+            $stmt->bindValue(':NotDistributed', SubJobStatus::NotDistributed->value, PDO::PARAM_INT);
             $stmt->execute();
             $job_table_record = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($job_table_record) {
@@ -51,18 +51,18 @@ function distributeJob($client_id) {
             exit;
         }
 
-        // jobテーブルのstatusを1に更新
-        $sql = "UPDATE `$table_name` SET status = :status WHERE id = :sub_job_id";
+        // jobテーブルのstatusをPendingResultsに更新
+        $sql = "UPDATE `$table_name` SET status = :PendingResults WHERE id = :sub_job_id";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':status', SubJobStatus::PendingResults->value, PDO::PARAM_INT);
+        $stmt->bindValue(':PendingResults', SubJobStatus::PendingResults->value, PDO::PARAM_INT);
         $stmt->bindParam(':sub_job_id', $sub_job_id);
         $stmt->execute();
 
-        // 初回配布時はtable_registryのstatus=1に更新
+        // 初回配布時はtable_registryのstatus=DistributionStartedに更新
         if ($sub_job_id == 1) {
-            $sql = "UPDATE table_registry SET status = :status WHERE table_name = :table_name";
+            $sql = "UPDATE table_registry SET status = :DistributionStarted WHERE table_name = :table_name";
             $stmt = $pdo->prepare($sql);
-            $stmt->bindValue(':status', JobStatus::DistributionStarted->value, PDO::PARAM_INT);
+            $stmt->bindValue(':DistributionStarted', JobStatus::DistributionStarted->value, PDO::PARAM_INT);
             $stmt->bindParam(':table_name', $table_name);
             $stmt->execute();
         }
@@ -115,22 +115,22 @@ function updateStatus($job_id, $sub_job_id) {
         $table_name = $table_registry_record['table_name'];
 
         // 1. sub_job テーブルの更新
-        $sql = "UPDATE `$table_name` SET status = :status WHERE id = :sub_job_id";
+        $sql = "UPDATE `$table_name` SET status = :ResultReceived WHERE id = :sub_job_id";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':status', SubJobStatus::ResultReceived->value, PDO::PARAM_INT);
+        $stmt->bindValue(':ResultReceived', SubJobStatus::ResultReceived->value, PDO::PARAM_INT);
         $stmt->bindParam(':sub_job_id', $sub_job_id);
         $stmt->execute();
 
         // 2. sub_job テーブルのステータスを確認
         $checkSql = "SELECT 
                 COUNT(*) AS total, 
-                SUM(CASE WHEN status = :status0 THEN 1 ELSE 0 END) AS has_zero,
-                SUM(CASE WHEN status = :status2 THEN 1 ELSE 0 END) AS has_two
+                SUM(CASE WHEN status = :NotDistributed THEN 1 ELSE 0 END) AS has_zero,
+                SUM(CASE WHEN status = :ResultReceived THEN 1 ELSE 0 END) AS has_two
              FROM `$table_name`";
 
         $checkStmt = $pdo->prepare($checkSql);
-        $checkStmt->bindValue(':status0', SubJobStatus::NotDistributed->value, PDO::PARAM_INT);
-        $checkStmt->bindValue(':status2', SubJobStatus::ResultReceived->value, PDO::PARAM_INT);
+        $checkStmt->bindValue(':NotDistributed', SubJobStatus::NotDistributed->value, PDO::PARAM_INT);
+        $checkStmt->bindValue(':ResultReceived', SubJobStatus::ResultReceived->value, PDO::PARAM_INT);
         $checkStmt->execute();
         $result = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -138,13 +138,13 @@ function updateStatus($job_id, $sub_job_id) {
         if ($result['total'] > 0) {
             if ($result['has_zero'] == 0) { // 0 がない場合
                 if ($result['has_two'] == $result['total']) { // 全てが 2 の場合
-                    $updateRegistrySql = "UPDATE table_registry SET status = :status3 WHERE id = :job_id";
+                    $updateRegistrySql = "UPDATE table_registry SET status = :AllResultsReceived WHERE id = :job_id";
                 } else { // 0 がなく、2 以外もある場合
-                    $updateRegistrySql = "UPDATE table_registry SET status = :status2 WHERE id = :job_id";
+                    $updateRegistrySql = "UPDATE table_registry SET status = :ResultsPending WHERE id = :job_id";
                 }
                 $updateStmt = $pdo->prepare($updateRegistrySql);
-                $stmt->bindValue(':status3', JobStatus::AllResultsReceived->value, PDO::PARAM_INT);
-                $stmt->bindValue(':status2', JobStatus::ResultsPending->value, PDO::PARAM_INT);
+                $stmt->bindValue(':AllResultsReceived', JobStatus::AllResultsReceived->value, PDO::PARAM_INT);
+                $stmt->bindValue(':ResultsPending', JobStatus::ResultsPending->value, PDO::PARAM_INT);
                 $updateStmt->bindParam(':job_id', $job_id, PDO::PARAM_INT);
                 $updateStmt->execute();
             }
