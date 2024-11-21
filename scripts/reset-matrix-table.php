@@ -1,4 +1,7 @@
 <?php
+
+require_once '../common.php';
+
 if (!isset($GROUP)) {
     $GROUP = 4; // default value
 }
@@ -31,7 +34,7 @@ try {
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
     // table_registryのstatusを0に更新
-    $sql = "UPDATE table_registry SET status = 0";
+    $sql = "UPDATE table_registry SET status = " . JobStatus::NoDistributed->value;
     $pdo->exec($sql);
 
     // トランザクションの開始

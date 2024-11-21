@@ -1,4 +1,7 @@
 <?php
+
+require_once '../common.php';
+
 $GROUP = 5;
 $RANK = 3;
 $PROC = 7;
@@ -41,17 +44,17 @@ try {
 
         if ($PROC >= ($GROUP * $RANK) * ($i + 1)) {
             // 全レコードをチェック
-            if ($status != 3) {
-                throw new Exception("Test failed at table_registry $i: Expected status 3 but got $status.");
+            if ($status != JobStatus::AllResultsReceived->value) {
+                throw new Exception("Test failed at table_registry $i: Expected status " . JobStatus::AllResultsReceived->value . " but got $status.");
             }
-            testTableRecords($pdo, $table_name, $GROUP * $RANK, 2);
+            testTableRecords($pdo, $table_name, $GROUP * $RANK, SubJobStatus::ResultReceived->value);
         } else {
             // 部分的にレコードをチェック
-            if ($status != 1) {
-                throw new Exception("Test failed at table_registry $i: Expected status 1 but got $status.");
+            if ($status != JobStatus::DistributionStarted->value) {
+                throw new Exception("Test failed at table_registry $i: Expected status " . JobStatus::DistributionStarted->value . " but got $status.");
             }
             $remainingCount = $PROC - ($GROUP * $RANK) * $i;
-            testTableRecords($pdo, $table_name, $remainingCount, 2);
+            testTableRecords($pdo, $table_name, $remainingCount, SubJobStatus::ResultReceived->value);
         }
     }
 
