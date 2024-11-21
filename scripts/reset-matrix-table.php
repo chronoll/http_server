@@ -1,6 +1,10 @@
 <?php
-$GROUP = 4;
-$RANK = 3;
+if (!isset($GROUP)) {
+    $GROUP = 4; // default value
+}
+if (!isset($RANK)) {
+    $RANK = 3; // default value
+}
 try {
     $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
