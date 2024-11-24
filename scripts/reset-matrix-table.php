@@ -1,10 +1,5 @@
 <?php
-if (!isset($GROUP)) {
-    $GROUP = 4; // default value
-}
-if (!isset($RANK)) {
-    $RANK = 3; // default value
-}
+function resetMatrixTable($GROUP = 4, $RANK = 3) {
 try {
     $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
@@ -52,13 +47,16 @@ try {
     $pdo->commit();
 
     echo "Records inserted successfully using transaction.";
+    deleteDirectoryRecursively('../uploads/.');
 } catch (PDOException $e) {
     // エラー時にはロールバック
     $pdo->rollBack();
     echo "Error: " . $e->getMessage();
 }
+}
 
-function deleteDirectoryRecursively($directory) {
+function deleteDirectoryRecursively($directory)
+{
     if (!is_dir($directory)) {
         echo "The path is not a directory: $directory\n";
         return;
@@ -81,7 +79,5 @@ function deleteDirectoryRecursively($directory) {
     rmdir($directory);
     echo "Deleted directory: $directory\n";
 }
-
-deleteDirectoryRecursively('../uploads/.');
 
 ?>
