@@ -12,6 +12,9 @@ $testCases = [
     ['GROUP' => 4, 'RANK' => 3, 'PROC' => 12],
 ];
 
+$DIRECTORY = "/home/kurotaka/http_client";
+$FILENAME = "exec.sh";
+
 $errors = [];
 
 foreach ($testCases as $testCase) {
@@ -25,13 +28,12 @@ foreach ($testCases as $testCase) {
 
     try {
         // 権限の付与
-        $targetDir = "/home/kurotaka/http_client";
-        if (!chdir($targetDir)) {
-            throw new Exception("Failed to change directory to $targetDir");
+        if (!chdir($DIRECTORY)) {
+            throw new Exception("Failed to change directory to $DIRECTORY");
         }
 
         // MPIでのリクエスト実行
-        $command = "sh /home/kurotaka/http_client/exec.sh " . $PROC;
+        $command = "sh " . $DIRECTORY . "/exec.sh " . $PROC;
         echo "Running command: $command\n";
         exec($command, $output, $returnVar);
         if ($returnVar !== 0) {
