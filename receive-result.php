@@ -13,34 +13,21 @@ if (isset($_GET['ID']) && isset($_GET['GROUP']) && isset($_GET['RANK']) && isset
     exit;
 }
 
-// ファイルを保存するディレクトリ
 $uploadDir = "uploads/";
-$jobDir = $job_id . "/";     // $job_idのディレクトリ
-$groupDir = $group_id . "/"; // $group_idのディレクトリ
-$fullDir = $uploadDir . $jobDir . $groupDir; // 完全なディレクトリパス
-$filename = $_SERVER['HTTP_X_FILENAME'] ?? 'default.txt';
-$filename = $group_id . "_" . $rank . "_" . $filename;
+$jobDir = "job_" . $job_id . "/";
+$groupDir = "group_" . $group_id . "/";
+$fullDir = $uploadDir . $jobDir . $groupDir; // ファイルを保存するディレクトリ
+
+$filename = $_SERVER['HTTP_X_FILENAME'] ?? 'default.txt'; // ファイル名
+$filepath = $fullDir . $filename; // ファイルのパス
 
 // 必要なディレクトリを作成
 if (!is_dir($fullDir)) {
     mkdir($fullDir, 0777, true);
 }
 
-// パーミッションの設定
-chmod($uploadDir, 0777);
-chmod($uploadDir . $jobDir, 0777); // $job_idのディレクトリ
-chmod($fullDir, 0777);            // $group_idのディレクトリ
-
-// ファイルのフルパス
-$filepath = $fullDir . $filename;
-
-// ファイルのフルパス
-// $filepath = $uploadDir . $filename;
-$filepath = $fullDir . $filename;
-
-// php://input からファイル内容を読み込む
+// ファイル内容を読み込む
 $data = file_get_contents("php://input");
-
 if ($data === false || strlen($data) === 0) {
     http_response_code(400);
     echo "No data received.";
