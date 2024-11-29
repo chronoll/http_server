@@ -84,6 +84,14 @@ c      character(7)   :: type_min
       double precision randlc, qq
       character*15     size
 
+c      コマンドライン引数で受け取る
+      character(len=10) :: arg1, arg2
+
+      integer :: count_start, count_end, count_rate
+
+      double precision :: sx_array(1)
+      double precision :: sy_array(1)
+
       integer          fstatus
       integer          t_total, t_gpairs, t_randn, t_rcomm, t_last
       parameter (t_total=1, t_gpairs=2, t_randn=3, t_rcomm=4, t_last=4)
@@ -101,10 +109,24 @@ c      character(7)   :: type_min
       data t_recs/'total', 'gpairs', 'randn', 'rcomm',
      >            ' totcomp', ' totcomm'/
 
+c      コマンドライン引数を取得
+      call get_command_argument(1, arg1)
+      call get_command_argument(2, arg2)
 
-      call mpi_init(ierr)
-      call mpi_comm_rank(MPI_COMM_WORLD,node,ierr)
-      call mpi_comm_size(MPI_COMM_WORLD,no_nodes,ierr)
+c      引数を整数に変換
+      read(arg1, *) node
+      read(arg2, *) no_nodes
+
+c      引数の確認
+      write(*, *) "Node ID:", node
+      write(*, *) "Total Nodes:", no_nodes
+
+      sx_array(1) = sx
+      sy_array(1) = sy
+
+c      call mpi_init(ierr)
+c     call mpi_comm_rank(MPI_COMM_WORLD,node,ierr)
+c     call mpi_comm_size(MPI_COMM_WORLD,no_nodes,ierr)
 
       call log_fopen(node)
 
@@ -113,8 +135,10 @@ c      character(7)   :: type_min
       re_num = 0
       bc_num = 0
       ba_num = 0
-      dp1_type = MPI_DOUBLE_PRECISION
-      dp2_type = MPI_REAL
+c      dp1_type = MPI_DOUBLE_PRECISION
+      dp1_type = 17
+c      dp2_type = MPI_REAL
+      dp2_type = 13
       type_sum = 1
       type_max = 2
       type_min = 3
@@ -124,9 +148,11 @@ c      print *,"look b",type_sum,len(type_sum)
 c      print *,"look a",type_double,len(type_double)
 
       if (.not. convertdouble) then
-         dp_type = MPI_DOUBLE_PRECISION
+c         dp_type = MPI_DOUBLE_PRECISION
+      dp_type = 17
       else
-         dp_type = MPI_REAL
+c         dp_type = MPI_REAL
+      dp_type = 13
       endif
 
       if (node.eq.root)  then
@@ -159,13 +185,17 @@ c      print *,"print_cnt before",cnt1,cnt2,type_sum
 c      call print_cnt(cnt4,cnt5,cnt6)
 c      print *,"print_cnt after",cnt1,cnt2,type_sum
 
-      time_begin_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_start, count_rate)
+c      time_begin_s = mpi_wtime()
+      time_begin_s = real(count_start) / real(count_rate)
 c      call mpi_bcast(timers_enabled, 1, MPI_LOGICAL, root, 
 c     >               MPI_COMM_WORLD, ierr)
       call http_bcast(node, root, no_nodes, timers_enabled, 1, 
-     >                MPI_LOGICAL, bc_num)
+     >                6, bc_num)
 
-      time_end_s = mpi_wtime()
+c      time_end_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_end)
+      time_end_s = real(count_end) / real(count_rate)
       ! add
 #ifdef MYLOG
       call log_fprintf(node,"MPI_Bcast", time_end_s - time_begin_s)
@@ -196,7 +226,7 @@ c   divide the total number
          write (6, 1) no_nodes, nn
  1       format ('Too many nodes:',2i6)
          ierrcode = 1
-         call mpi_abort(MPI_COMM_WORLD,ierrcode,ierr)
+c         call mpi_abort(MPI_COMM_WORLD,ierrcode,ierr)
          stop
       endif
 
@@ -218,10 +248,14 @@ c---------------------------------------------------------------------
       do i = 1, t_last
          call timer_clear(i)
       end do
-      time_begin_s = mpi_wtime()
-      call mpi_barrier(MPI_COMM_WORLD, ierr)
+      call SYSTEM_CLOCK(count_start, count_rate)
+c      time_begin_s = mpi_wtime()
+      time_begin_s = real(count_start) / real(count_rate)
+c     call mpi_barrier(MPI_COMM_WORLD, ierr)
 c      call barrier(node, no_nodes, bc_num)
-      time_end_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_end)
+c      time_end_s = mpi_wtime()
+      time_end_s = real(count_end) / real(count_rate)
       ! add
 #ifdef MYLOG
       call log_fprintf(node,"MPI_Barrier", time_end_s - time_begin_s)
@@ -312,12 +346,16 @@ c        vectorizable.
 
 
       if (timers_enabled) call timer_start(t_rcomm)
-      time_begin_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_start, count_rate)
+c      time_begin_s = mpi_wtime()
+      time_begin_s = real(count_start) / real(count_rate)
 c      call mpi_allreduce(sx, x, 1, dp_type,
 c     >                   MPI_SUM, MPI_COMM_WORLD, ierr)
       call http_allreduce(node, 0, no_nodes, sx, x, 1, dp_type,
-     >                   MPI_SUM, all_num)
-      time_end_s = mpi_wtime()
+     >                   3, all_num)
+      call SYSTEM_CLOCK(count_end)
+c      time_end_s = mpi_wtime()
+      time_end_s = real(count_end) / real(count_rate)
       ! add
 #ifdef MYLOG
       call log_fprintf(node,"MPI_AllReduce1", time_end_s - time_begin_s)
@@ -328,12 +366,16 @@ c     >                   MPI_SUM, MPI_COMM_WORLD, ierr)
       all_num = all_num+1
 
       sx = x(1)
-      time_begin_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_start, count_rate)
+c      time_begin_s = mpi_wtime()
+      time_begin_s = real(count_start) / real(count_rate)
 c      call mpi_allreduce(sy, x, 1, dp_type,
 c     >                   MPI_SUM, MPI_COMM_WORLD, ierr)
       call http_allreduce(node, 0, no_nodes, sy, x, 1, dp_type,
-     >                   MPI_SUM, all_num)
-      time_end_s = mpi_wtime()
+     >                   3, all_num)
+c      time_end_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_end)
+      time_end_s = real(count_end) / real(count_rate)
       ! add
 #ifdef MYLOG
       call log_fprintf(node,"MPI_AllReduce2", time_end_s - time_begin_s)
@@ -344,12 +386,16 @@ c     >                   MPI_SUM, MPI_COMM_WORLD, ierr)
       all_num = all_num+1
 
       sy = x(1)
-      time_begin_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_start, count_rate)
+c      time_begin_s = mpi_wtime()
+      time_begin_s = real(count_start) / real(count_rate)
 c      call mpi_allreduce(q, x, nq, dp_type,
 c     >                   MPI_SUM, MPI_COMM_WORLD, ierr)
       call http_allreduce(node, 0, no_nodes, q, x, nq, dp_type,
-     >                   MPI_SUM, all_num)
-      time_end_s = mpi_wtime()
+     >                   3, all_num)
+c      time_end_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_end)
+      time_end_s = real(count_end) / real(count_rate)
       ! add
 #ifdef MYLOG
       call log_fprintf(node,"MPI_AllReduce3", time_end_s - time_begin_s)
@@ -372,12 +418,16 @@ c     >                   MPI_SUM, MPI_COMM_WORLD, ierr)
       call timer_stop(1)
       tm  = timer_read(1)
 
-      time_begin_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_start, count_rate)
+c      time_begin_s = mpi_wtime()
+      time_begin_s = real(count_start) / real(count_rate)
 c      call mpi_allreduce(tm, x, 1, dp_type,
 c     >                   MPI_MAX, MPI_COMM_WORLD, ierr)
       call http_allreduce(node, 0, no_nodes, tm, x, 1, dp_type,
      >                   MPI_MAX, all_num)
-      time_end_s = mpi_wtime()
+c      time_end_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_end)
+      time_end_s = real(count_end) / real(count_rate)
       ! add
 #ifdef MYLOG
       call log_fprintf(node,"MPI_AllReduce4", time_end_s - time_begin_s)
@@ -445,12 +495,16 @@ c     >                   MPI_MAX, MPI_COMM_WORLD, ierr)
       t1m(t_last+2) = t1m(t_rcomm)
       t1m(t_last+1) = t1m(t_total) - t1m(t_last+2)
 
-      time_begin_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_start, count_rate)
+c      time_begin_s = mpi_wtime()
+      time_begin_s = real(count_start) / real(count_rate)
 c      call MPI_Reduce(t1m, tsum,  t_last+2, dp_type, MPI_SUM, 
 c     >                0, MPI_COMM_WORLD, ierr)
       call http_reduce(node, 0,  no_nodes, t1m, 
-     >                tsum, t_last+2, dp_type, MPI_SUM,re_num)
-      time_end_s = mpi_wtime()
+     >                tsum, t_last+2, dp_type, 3,re_num)
+c      time_end_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_end)
+      time_end_s = real(count_end) / real(count_rate)
       ! add
 #ifdef MYLOG
       call log_fprintf(node,"MPI_Reduce1", time_end_s - time_begin_s)
@@ -459,12 +513,16 @@ c     >                0, MPI_COMM_WORLD, ierr)
 #endif
       re_num = re_num+1
 
-      time_begin_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_start, count_rate)
+c      time_begin_s = mpi_wtime()
+      time_begin_s = real(count_start) / real(count_rate)
 c      call MPI_Reduce(t1m, tming, t_last+2, dp_type, MPI_MIN, 
 c     >                0, MPI_COMM_WORLD, ierr)
       call http_reduce(node, 0, no_nodes, t1m,
-     >                tming, t_last+2, dp_type, MPI_MIN, re_num)
-      time_end_s = mpi_wtime()
+     >                tming, t_last+2, dp_type, 2, re_num)
+c      time_end_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_end)
+      time_end_s = real(count_end) / real(count_rate)
       ! add
 #ifdef MYLOG
       call log_fprintf(node,"MPI_Reduce2", time_end_s - time_begin_s)
@@ -474,12 +532,16 @@ c     >                0, MPI_COMM_WORLD, ierr)
     
       re_num = re_num+1
 
-      time_begin_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_start, count_rate)
+c      time_begin_s = mpi_wtime()
+      time_begin_s = real(count_start) / real(count_rate)
 c      call MPI_Reduce(t1m, tmaxg, t_last+2, dp_type, MPI_MAX, 
 c     >                0, MPI_COMM_WORLD, ierr)
       call http_reduce(node, 0, no_nodes, t1m,
-     >                tmaxg, t_last+2, dp_type, MPI_MAX, re_num)
-      time_end_s = mpi_wtime()
+     >                tmaxg, t_last+2, dp_type, 1, re_num)
+c      time_end_s = mpi_wtime()
+      call SYSTEM_CLOCK(count_end)
+      time_end_s = real(count_end) / real(count_rate)
       ! add
 #ifdef MYLOG
       call log_fprintf(node,"MPI_Reduce3", time_end_s - time_begin_s)
@@ -504,6 +566,6 @@ c     >                0, MPI_COMM_WORLD, ierr)
 #ifdef MYLOG
       call log_fclose()
 #endif
-      call mpi_finalize(ierr)
+c      call mpi_finalize(ierr)
 
       end
