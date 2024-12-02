@@ -38,7 +38,7 @@ if ($data === false || strlen($data) === 0) {
 if (file_put_contents($filepath, $data) !== false) {
     http_response_code(200);
     echo "File saved successfully: " . htmlspecialchars($filepath);
-    updateStatus($job_id, $sub_job_id);
+    updateStatus($job_id, $sub_job_id, $client_id);
 } else {
     http_response_code(500);
     echo "Failed to save file.";

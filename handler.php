@@ -51,10 +51,11 @@ function distributeJob($client_id) {
             exit;
         }
 
-        // jobテーブルのstatusを1に更新
-        $sql = "UPDATE `$table_name` SET status = :status WHERE id = :sub_job_id";
+        // jobテーブルのstatusを1に更新, client_idを登録
+        $sql = "UPDATE `$table_name` SET status = :status, client = :client_id WHERE id = :sub_job_id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindValue(':status', SubJobStatus::ResultPending->value, PDO::PARAM_INT);
+        $stmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
         $stmt->bindParam(':sub_job_id', $sub_job_id);
         $stmt->execute();
 
@@ -91,7 +92,49 @@ function distributeJob($client_id) {
     }
 }
 
-function updateStatus($job_id, $sub_job_id) {
+function getStatus($job_id, $sub_job_id, $client_id) {
+    try {
+        // データベース接続
+        $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
+
+        // テーブル名の取得
+        $getTableNameSql = "SELECT table_name FROM table_registry WHERE id = :job_id";
+        $getTableNameStmt = $pdo->prepare($getTableNameSql);
+        $getTableNameStmt->bindParam(":job_id", $job_id, PDO::PARAM_INT);
+        $getTableNameStmt->execute();
+        $table_registry_record = $getTableNameStmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$table_registry_record) {
+            http_response_code(500);
+            echo "No table found with the given job_id.";
+            exit;
+        }
+
+        $table_name = $table_registry_record['table_name'];
+
+        // クライアントIDを使ってstatusを取得
+        $sql = "SELECT status FROM `$table_name` WHERE client = :client_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$result) {
+            http_response_code(404);
+            echo "No status found for the given client_id.";
+            exit;
+        }
+
+        return $result['status'];
+    } catch(PDOException $e) {
+        http_response_code(500);
+        echo 'Connection failed: ' . $e->getMessage();
+    } finally {
+        $pdo = null; // 明示的に接続を切断
+    }
+}
+
+function updateStatus($job_id, $sub_job_id, $client_id) {
     try {
         $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
@@ -154,6 +197,42 @@ function updateStatus($job_id, $sub_job_id) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
+        http_response_code(500);
+        echo 'Connection failed: ' . $e->getMessage();
+    } finally {
+        $pdo = null;
+    }
+}
+
+function resetStatus($job_id, $sub_job_id, $client_id) {
+    try {
+        $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
+
+        // テーブル名の取得
+        $getTableNameSql = "SELECT table_name FROM table_registry WHERE id = :job_id FOR UPDATE";
+        $getTableNameStmt = $pdo->prepare($getTableNameSql);
+        $getTableNameStmt->bindParam(":job_id", $job_id);
+        $getTableNameStmt->execute();
+        $table_registry_record = $getTableNameStmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$table_registry_record) {
+            $pdo->rollBack();
+            http_response_code(500);
+            echo "No table found with the given job_id.";
+            exit;
+        }
+
+        $table_name = $table_registry_record['table_name'];
+
+        // 1. sub_job テーブルの更新
+        $sql = "UPDATE `$table_name` SET status = :status WHERE id = :sub_job_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':status', SubJobStatus::NoDistribution->value, PDO::PARAM_INT);
+        $stmt->bindParam(':sub_job_id', $sub_job_id);
+        $stmt->execute();
+
+        $pdo->commit();
+    } catch(PDOException $e) {
         http_response_code(500);
         echo 'Connection failed: ' . $e->getMessage();
     } finally {
