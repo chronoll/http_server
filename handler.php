@@ -241,3 +241,45 @@ function resetGroupStatus($job_id, $group_id) {
         $pdo = null;
     }
 }
+
+function getClientID($job_id, $sub_job_id) {
+    try {
+        // データベース接続
+        $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
+
+        // テーブル名の取得
+        $getTableNameSql = "SELECT table_name FROM table_registry WHERE id = :job_id";
+        $getTableNameStmt = $pdo->prepare($getTableNameSql);
+        $getTableNameStmt->bindParam(":job_id", $job_id, PDO::PARAM_INT);
+        $getTableNameStmt->execute();
+        $table_registry_record = $getTableNameStmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$table_registry_record) {
+            http_response_code(500);
+            echo "No table found with the given job_id.";
+            exit;
+        }
+
+        $table_name = $table_registry_record['table_name'];
+
+        // 指定groupの全statusを取得
+        $sql = "SELECT client FROM `$table_name` WHERE id = :sub_job_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':sub_job_id', $sub_job_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$result) {
+            http_response_code(404);
+            echo "No status found for the given _id.";
+            exit;
+        }
+
+        return $result['client'];
+    } catch(PDOException $e) {
+        http_response_code(500);
+        echo 'Connection failed: ' . $e->getMessage();
+    } finally {
+        $pdo = null;
+    }
+}

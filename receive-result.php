@@ -13,6 +13,14 @@ if (isset($_GET['ID']) && isset($_GET['GROUP']) && isset($_GET['RANK']) && isset
     exit;
 }
 
+// client_idの検証
+$expected_client_id = getClientID($job_id, $sub_job_id);
+if ($client_id != $expected_client_id) {
+    http_response_code(408); // Request Timeout
+    echo "Your client_id is invalid.";
+    exit;
+}
+
 $uploadDir = "uploads/";
 $jobDir = "job_" . $job_id . "/";
 $groupDir = "group_" . $group_id . "/";
