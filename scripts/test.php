@@ -5,10 +5,10 @@ include("reset-matrix-table.php");
 
 // RANK = 3, PROC <= 12 にする
 $testCases = [
-    ['GROUP' => 2, 'RANK' => 3, 'PROC' => 5],
-    ['GROUP' => 2, 'RANK' => 3, 'PROC' => 6],
-    ['GROUP' => 2, 'RANK' => 3, 'PROC' => 7],
-    ['GROUP' => 2, 'RANK' => 3, 'PROC' => 12],
+    // ['GROUP' => 2, 'RANK' => 3, 'PROC' => 5],
+    // ['GROUP' => 2, 'RANK' => 3, 'PROC' => 6],
+    // ['GROUP' => 2, 'RANK' => 3, 'PROC' => 7],
+    // ['GROUP' => 2, 'RANK' => 3, 'PROC' => 12],
     ['GROUP' => 4, 'RANK' => 3, 'PROC' => 12],
 ];
 

@@ -38,17 +38,21 @@ if (file_exists($filename)) {
         exit;
     }
 
-    $url = sprintf(
-        "http://localhost/http_server/timer.php?job_id=%s&sub_job_id=%s&client_id=%s",
-        urlencode($result['job_id']),
-        urlencode($result['sub_job_id']),
-        urlencode($client_id)
-    );
-    
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_exec($ch);
-    curl_close($ch);
+    // rankが0の場合、タイマースクリプトを実行
+    if ($result['rank'] == 0) {
+        $url = sprintf(
+            "http://localhost/http_server/timer.php?job_id=%s&sub_job_id=%s&group_id=%s&client_id=%s",
+            urlencode($result['job_id']),
+            urlencode($result['sub_job_id']),
+            urlencode($result['group_id']),
+            urlencode($client_id)
+        );
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_exec($ch);
+        curl_close($ch);
+    }
 
 } else {
     http_response_code(500); // Internal Server Error

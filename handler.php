@@ -92,7 +92,7 @@ function distributeJob($client_id) {
     }
 }
 
-function getStatus($job_id, $sub_job_id, $client_id) {
+function getGroupStatus($job_id, $group_id) {
     try {
         // データベース接続
         $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
@@ -112,25 +112,25 @@ function getStatus($job_id, $sub_job_id, $client_id) {
 
         $table_name = $table_registry_record['table_name'];
 
-        // クライアントIDを使ってstatusを取得
-        $sql = "SELECT status FROM `$table_name` WHERE client = :client_id";
+        // 指定groupの全statusを取得
+        $sql = "SELECT status FROM `$table_name` WHERE group_id = :group_id";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+        $stmt->bindValue(':group_id', $group_id, PDO::PARAM_INT);
         $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if (!$result) {
+        if (!$results) {
             http_response_code(404);
             echo "No status found for the given client_id.";
             exit;
         }
 
-        return $result['status'];
+        return $results;
     } catch(PDOException $e) {
         http_response_code(500);
         echo 'Connection failed: ' . $e->getMessage();
     } finally {
-        $pdo = null; // 明示的に接続を切断
+        $pdo = null;
     }
 }
 
@@ -204,7 +204,7 @@ function updateStatus($job_id, $sub_job_id, $client_id) {
     }
 }
 
-function resetStatus($job_id, $sub_job_id, $client_id) {
+function resetGroupStatus($job_id, $group_id) {
     try {
         $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
@@ -224,11 +224,11 @@ function resetStatus($job_id, $sub_job_id, $client_id) {
 
         $table_name = $table_registry_record['table_name'];
 
-        // 1. sub_job テーブルの更新
-        $sql = "UPDATE `$table_name` SET status = :status WHERE id = :sub_job_id";
+        // groupの全statusを0に更新
+        $sql = "UPDATE `$table_name` SET status = :status WHERE group_id = :group_id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindValue(':status', SubJobStatus::NoDistribution->value, PDO::PARAM_INT);
-        $stmt->bindParam(':sub_job_id', $sub_job_id);
+        $stmt->bindParam(':group_id', $group_id);
         $stmt->execute();
 
         $pdo->commit();
