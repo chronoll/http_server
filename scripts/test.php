@@ -9,7 +9,7 @@ $testCases = [
     // ['GROUP' => 2, 'RANK' => 3, 'PROC' => 6],
     // ['GROUP' => 2, 'RANK' => 3, 'PROC' => 7],
     // ['GROUP' => 2, 'RANK' => 3, 'PROC' => 12],
-    ['GROUP' => 4, 'RANK' => 3, 'PROC' => 12],
+    ['GROUP' => 4, 'RANK' => 3, 'PROC' => 11],
 ];
 
 $DIRECTORY = "/home/kurotaka/http_client";
@@ -19,7 +19,7 @@ $errors = [];
 
 foreach ($testCases as $testCase) {
     $GROUP = $testCase['GROUP'];
-    $RANK = $testCase['RANK'];
+    $RANK = $testCase['RANK']; // TODO: rank_countにより動的に変更させる
     $PROC = $testCase['PROC'];
 
     echo "Testing with GROUP=$GROUP, RANK=$RANK, PROC=$PROC\n";

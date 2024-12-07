@@ -38,8 +38,8 @@ if (file_exists($filename)) {
         exit;
     }
 
-    // rankが0の場合、タイマースクリプトを実行
-    if ($result['rank'] == 0) {
+    // グループ内最後尾のサブジョブの場合、タイマースクリプトを実行
+    if ($result['rank'] == $result['rank_count'] - 1) {
         $url = sprintf(
             "http://localhost/http_server/timer.php?job_id=%s&sub_job_id=%s&group_id=%s&client_id=%s",
             urlencode($result['job_id']),

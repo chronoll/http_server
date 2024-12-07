@@ -35,6 +35,7 @@ function distributeJob($client_id) {
                 $job_id = $job['id'];
                 $table_name = $job['table_name'];
                 $filename = $job['filename'];
+                $rank_count = $job['rank_count'];
                 // ジョブテーブルからの情報
                 $sub_job_id = $job_table_record['id'];
                 $rank = $job_table_record['rank'];
@@ -73,6 +74,7 @@ function distributeJob($client_id) {
         $result = [
             'job_id' => $job_id,
             'filename' => $filename,
+            'rank_count' => $rank_count,
             'sub_job_id' => $sub_job_id,
             'rank' => $rank,
             'group_id' => $group_id
