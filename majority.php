@@ -1,12 +1,12 @@
 <?php
 // GET変数の取得
-$job = isset($_GET['JOB']) ? intval($_GET['JOB']) : null; // JOBを取得
-$groupCount = isset($_GET['GROUP']) ? intval($_GET['GROUP']) : null; // GROUPを取得
-$rank = isset($_GET['RANK']) ? intval($_GET['RANK']) : null; // RANKを取得
+$job = isset($_GET['job_id']) ? intval($_GET['job_id']) : null; // job_idを取得
+$groupCount = isset($_GET['group_id']) ? intval($_GET['group_id']) : null; // group_idを取得
+$rank = isset($_GET['rank']) ? intval($_GET['rank']) : null; // rankを取得
 
 // 必須パラメータの確認
 if ($job === null || $groupCount === null || $rank === null) {
-    echo json_encode(['error' => 'Missing required GET parameters: JOB, GROUP, RANK']);
+    echo json_encode(['error' => 'Missing required GET parameters: job_id, group_id, rank']);
     exit;
 }
 
