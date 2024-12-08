@@ -51,7 +51,7 @@ if (file_put_contents($filepath, $data) !== false) {
         $url = sprintf(
             "http://localhost/http_server/majority.php?job_id=%s&group_id=%s&rank=%s",
             urlencode($job_id),
-            urlencode($group_id),
+            urlencode($group_id), // TODO: group数を動的に変える
             urlencode(3) // TODO: 並列数を動的に変える
         );
         
