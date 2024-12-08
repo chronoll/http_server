@@ -46,7 +46,20 @@ if ($data === false || strlen($data) === 0) {
 if (file_put_contents($filepath, $data) !== false) {
     http_response_code(200);
     echo "File saved successfully: " . htmlspecialchars($filepath);
-    updateStatus($job_id, $sub_job_id, $client_id);
+    $isJobCompleted = updateStatus($job_id, $sub_job_id, $client_id);
+    if ($isJobCompleted) {
+        $url = sprintf(
+            "http://localhost/http_server/majority.php?job_id=%s&group_id=%s&rank=%s",
+            urlencode($job_id),
+            urlencode($group_id),
+            urlencode(3) // TODO: 並列数を動的に変える
+        );
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_exec($ch);
+        curl_close($ch);
+    }
 } else {
     http_response_code(500);
     echo "Failed to save file.";

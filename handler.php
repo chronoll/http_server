@@ -137,6 +137,7 @@ function getGroupStatus($job_id, $group_id) {
 }
 
 function updateStatus($job_id, $sub_job_id, $client_id) {
+    $isJobCompleted = false; // ジョブ完了フラグを更新したかどうか
     try {
         $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
@@ -184,6 +185,7 @@ function updateStatus($job_id, $sub_job_id, $client_id) {
                     $updateRegistrySql = "UPDATE table_registry SET status = :status WHERE id = :job_id";
                     $updateStmt = $pdo->prepare($updateRegistrySql);
                     $updateStmt->bindValue(':status', JobStatus::ResultsAllReceived->value, PDO::PARAM_INT);
+                    $isJobCompleted = true; // ジョブ完了フラグを立てる
                 } else {
                     $updateRegistrySql = "UPDATE table_registry SET status = :status WHERE id = :job_id";
                     $updateStmt = $pdo->prepare($updateRegistrySql);
@@ -204,6 +206,8 @@ function updateStatus($job_id, $sub_job_id, $client_id) {
     } finally {
         $pdo = null;
     }
+
+    return $isJobCompleted;
 }
 
 function resetGroupStatus($job_id, $group_id) {
