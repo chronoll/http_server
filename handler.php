@@ -214,6 +214,8 @@ function resetGroupStatus($job_id, $group_id) {
     try {
         $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
+        $pdo->beginTransaction();
+
         // テーブル名の取得
         $getTableNameSql = "SELECT table_name FROM table_registry WHERE id = :job_id FOR UPDATE";
         $getTableNameStmt = $pdo->prepare($getTableNameSql);
@@ -237,8 +239,17 @@ function resetGroupStatus($job_id, $group_id) {
         $stmt->bindParam(':group_id', $group_id);
         $stmt->execute();
 
+        // groupの全clientをNULLに更新
+        $sqlClient = "UPDATE `$table_name` SET client = NULL WHERE group_id = :group_id";
+        $stmtClient = $pdo->prepare($sqlClient);
+        $stmtClient->bindParam(':group_id', $group_id);
+        $stmtClient->execute();
+
         $pdo->commit();
     } catch(PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         http_response_code(500);
         echo 'Connection failed: ' . $e->getMessage();
     } finally {
