@@ -298,3 +298,55 @@ function getClientID($job_id, $sub_job_id) {
         $pdo = null;
     }
 }
+
+function addGroup($job_id) {
+    try {
+        // データベース接続
+        $pdo =  new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
+
+        $pdo->beginTransaction();
+
+        // テーブル名の取得
+        $getTableNameSql = "SELECT table_name, rank_count FROM table_registry WHERE id = :job_id";
+        $getTableNameStmt = $pdo->prepare($getTableNameSql);
+        $getTableNameStmt->bindParam(":job_id", $job_id, PDO::PARAM_INT);
+        $getTableNameStmt->execute();
+        $table_registry_record = $getTableNameStmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$table_registry_record) {
+            http_response_code(500);
+            echo "No table found with the given job_id.";
+            exit;
+        }
+
+        $table_name = $table_registry_record['table_name'];
+        $rank_count = $table_registry_record['rank_count'];
+
+        // 最後尾のgroup_idを取得
+        $getLastGroupIdSql = "SELECT group_id FROM `$table_name` ORDER BY id DESC LIMIT 1";
+        $getLastGroupIdStmt = $pdo->prepare($getLastGroupIdSql);
+        $getLastGroupIdStmt->execute();
+        $lastGroupRecord = $getLastGroupIdStmt->fetch(PDO::FETCH_ASSOC);
+
+        $next_group_number = intval($lastGroupRecord['group_id']) + 1; // 次のgroup_id
+        
+        for ($rank = 0; $rank < $rank_count; $rank++) {
+            $sql = "INSERT INTO `$table_name` (group_id, rank) VALUES (:group_id, :rank)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':group_id', $next_group_number, PDO::PARAM_INT);
+            $stmt->bindParam(':rank', $rank, PDO::PARAM_INT);
+            $stmt->execute();
+        }
+
+        $pdo->commit();
+
+    } catch(PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        http_response_code(500);
+        echo 'Connection failed: ' . $e->getMessage();
+    } finally {
+        $pdo = null;
+    }
+}
