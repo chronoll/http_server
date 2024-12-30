@@ -5,29 +5,28 @@ include 'handler.php';
 // GET変数の取得
 // $job = isset($_GET['job_id']) ? intval($_GET['job_id']) : null; // job_idを取得
 // $groupCount = isset($_GET['group_id']) ? intval($_GET['group_id']) : null; // group_idを取得
-// $rankCount = isset($_GET['rank']) ? intval($_GET['rank']) : null; // rankを取得
 
 $REQUIRED_COUNT = 3;
 
 // 動作確認用固定値
 $job = 1;
 $groupCount = 3;
-$rankCount = 3;
 
 // 必須パラメータの確認
-if ($job === null || $groupCount === null || $rankCount === null) {
+if ($job === null || $groupCount === null) {
     echo json_encode(['error' => 'Missing required GET parameters: job_id, group_id, rank']);
     exit;
 }
 
+$mergedFileName = "merged";
+
 $allResults = []; // 全体の結果を保持する配列
 $majorityContents = []; // 多数決の内容を保持する配列
 
-for ($rank = 0; $rank < $rankCount; $rank++) {
     // 動的にfilepathsを生成
     $filepaths = [];
     for ($group = 1; $group <= $groupCount; $group++) {
-        $filepaths[$group] = "uploads/job_$job/group_$group/result_$rank";
+        $filepaths[$group] = "uploads/job_$job/group_$group/$mergedFileName";
     }
 
     // ファイル内容の比較処理
@@ -46,7 +45,7 @@ for ($rank = 0; $rank < $rankCount; $rank++) {
 
     if (max($counts) < $REQUIRED_COUNT) {
         addGroup($job);
-        echo "Majority not reached for rank $rank, added a new group\n";
+        echo "Majority not reached, added a new group\n";
         exit;
     }
     
@@ -60,20 +59,13 @@ for ($rank = 0; $rank < $rankCount; $rank++) {
         }
     }
 
-    // rankごとの結果を保存
-    $allResults[$rank] = $matchingGroups;
-    $majorityContents[$rank] = $majorityContent;
-}
-
-for ($rank = 0; $rank < $rankCount; $rank++) {
     // 結果ファイルに多数決の内容を書き込む
-    $resultFilePath = "results/job_$job/result_$rank";
+    $resultFilePath = "results/job_$job/m-result";
     if (!is_dir(dirname($resultFilePath))) {
         mkdir(dirname($resultFilePath), 0777, true); // ディレクトリを作成
     }
-    file_put_contents($resultFilePath, $majorityContents[$rank]);
-}
+    file_put_contents($resultFilePath, $majorityContent);
 
 // 全ての結果をJSONで出力
-echo json_encode($allResults);
+echo json_encode($matchingGroups);
 ?>
