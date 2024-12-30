@@ -3,14 +3,20 @@
 include 'handler.php';
 
 // GET変数の取得
-// $job = isset($_GET['job_id']) ? intval($_GET['job_id']) : null; // job_idを取得
-// $groupCount = isset($_GET['group_id']) ? intval($_GET['group_id']) : null; // group_idを取得
+$job = isset($_GET['job_id']) ? intval($_GET['job_id']) : null; // job_idを取得
+$groupCount = isset($_GET['group_count']) ? intval($_GET['group_count']) : null; // group_countを取得
 
-$REQUIRED_COUNT = 3;
+// 必須パラメータの確認
+if ($job === null || $groupCount === null) {
+    echo json_encode(['error' => 'Missing required GET parameters: job_id, group_count']);
+    exit;
+}
 
-// 動作確認用固定値
-$job = 1;
-$groupCount = 3;
+$REQUIRED_COUNT = 2;
+
+// // 動作確認用固定値
+// $job = 1;
+// $groupCount = 3;
 
 // 必須パラメータの確認
 if ($job === null || $groupCount === null) {
