@@ -64,4 +64,27 @@ if (file_put_contents($filepath, $data) !== false) {
     http_response_code(500);
     echo "Failed to save file.";
 }
+
+$isGroupCompleted = true;
+$groupStatus = getGroupStatus($job_id, $group_id);
+foreach ($groupStatus as $status) {
+    if ($status['status'] != SubJobStatus::ResultReceived->value) {
+        $isGroupCompleted = false;
+        break;
+    }
+}
+
+if ($isGroupCompleted) {
+    $url = sprintf(
+        "http://localhost/http_server/merge.php?job_id=%s&group_id=%s&rank=%s",
+        urlencode($job_id),
+        urlencode($group_id), // TODO: group数を動的に変える
+        urlencode(3) // TODO: 並列数を動的に変える
+    );
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_exec($ch);
+    curl_close($ch);
+}
 ?>
