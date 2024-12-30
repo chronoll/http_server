@@ -357,6 +357,25 @@ function addGroup($job_id) {
             $stmt->execute();
         }
 
+        // ジョブ全体のstatusを確認
+        $checkSql = "SELECT COUNT(*) AS total, 
+                            SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END) AS has_zero 
+                     FROM `$table_name`";
+        $checkStmt = $pdo->prepare($checkSql);
+        $checkStmt->execute();
+        $result = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+        // 条件に応じて table_registry を更新
+        if ($result['total'] > 0) {
+            $newStatus = ($result['has_zero'] == $result['total']) ? 0 : 1;
+
+            $updateRegistrySql = "UPDATE table_registry SET status = :status WHERE id = :job_id";
+            $updateStmt = $pdo->prepare($updateRegistrySql);
+            $updateStmt->bindValue(':status', $newStatus, PDO::PARAM_INT);
+            $updateStmt->bindParam(':job_id', $job_id, PDO::PARAM_INT);
+            $updateStmt->execute();
+        }
+
         $pdo->commit();
 
     } catch(PDOException $e) {
