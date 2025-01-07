@@ -12,11 +12,7 @@ if ($job === null || $groupCount === null) {
     exit;
 }
 
-$REQUIRED_COUNT = 2;
-
-// // 動作確認用固定値
-// $job = 1;
-// $groupCount = 3;
+$REQUIRED_COUNT = 3;
 
 // 必須パラメータの確認
 if ($job === null || $groupCount === null) {
@@ -35,6 +31,8 @@ $majorityContents = []; // 多数決の内容を保持する配列
         $filepaths[$group] = "uploads/job_$job/group_$group/$mergedFileName";
     }
 
+    echo "group_count: " . json_encode($groupCount) . "\n";
+
     // ファイル内容の比較処理
     $contents = [];
     foreach ($filepaths as $group => $path) {
@@ -48,6 +46,8 @@ $majorityContents = []; // 多数決の内容を保持する配列
 
     // 多数決の内容を判定
     $counts = array_count_values($contents);
+
+    echo "Counts: " . json_encode(max($counts)) . "\n";
 
     if (max($counts) < $REQUIRED_COUNT) {
         addGroup($job);

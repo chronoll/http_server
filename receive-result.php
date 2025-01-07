@@ -46,13 +46,13 @@ if ($data === false || strlen($data) === 0) {
 if (file_put_contents($filepath, $data) !== false) {
     http_response_code(200);
     echo "File saved successfully: " . htmlspecialchars($filepath);
-    $isJobCompleted = updateStatus($job_id, $sub_job_id, $client_id);
-    if ($isJobCompleted) {
+    $result = updateStatus($job_id, $sub_job_id, $client_id);
+    if ($result['isJobCompleted']) {
         $url = sprintf(
             // "http://localhost/http_server/majority.php?job_id=%s&group_count=%s",
             "http://localhost/http_server/m-first.php?job_id=%s&group_count=%s",
             urlencode($job_id),
-            urlencode(3), // TODO: group数を動的に変える
+            urlencode($result['group_count']), // TODO: group数を動的に変える
         );
         
         $ch = curl_init();

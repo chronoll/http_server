@@ -137,7 +137,7 @@ function getGroupStatus($job_id, $group_id) {
 }
 
 function updateStatus($job_id, $sub_job_id, $client_id) {
-    $isJobCompleted = false; // ジョブ完了フラグを更新したかどうか
+    $result['isJobCompleted'] = false; // ジョブ完了フラグを更新したかどうか
     try {
         $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
@@ -176,16 +176,23 @@ function updateStatus($job_id, $sub_job_id, $client_id) {
         $checkStmt->bindValue(':status0', SubJobStatus::NoDistribution->value, PDO::PARAM_INT);
         $checkStmt->bindValue(':status2', SubJobStatus::ResultReceived->value, PDO::PARAM_INT);
         $checkStmt->execute();
-        $result = $checkStmt->fetch(PDO::FETCH_ASSOC);
+        $checkResult = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
         // 3. 条件に応じて table_registry の更新
-        if ($result['total'] > 0) {
-            if ($result['has_zero'] == 0) {
-                if ($result['has_two'] == $result['total']) {
+        if ($checkResult['total'] > 0) {
+            if ($checkResult['has_zero'] == 0) {
+                if ($checkResult['has_two'] == $checkResult['total']) {
                     $updateRegistrySql = "UPDATE table_registry SET status = :status WHERE id = :job_id";
                     $updateStmt = $pdo->prepare($updateRegistrySql);
                     $updateStmt->bindValue(':status', JobStatus::ResultsAllReceived->value, PDO::PARAM_INT);
-                    $isJobCompleted = true; // ジョブ完了フラグを立てる
+                    $result['isJobCompleted'] = true; // ジョブ完了フラグを立てる
+
+                    // 最後尾のグループ番号を取得
+                    $getLastGroupIdSql = "SELECT group_id FROM `$table_name` ORDER BY id DESC LIMIT 1";
+                    $getLastGroupIdStmt = $pdo->prepare($getLastGroupIdSql);
+                    $getLastGroupIdStmt->execute();
+                    $lastGroupRecord = $getLastGroupIdStmt->fetch(PDO::FETCH_ASSOC);
+                    $result['group_count'] = $lastGroupRecord['group_id'];
                 } else {
                     $updateRegistrySql = "UPDATE table_registry SET status = :status WHERE id = :job_id";
                     $updateStmt = $pdo->prepare($updateRegistrySql);
@@ -207,7 +214,7 @@ function updateStatus($job_id, $sub_job_id, $client_id) {
         $pdo = null;
     }
 
-    return $isJobCompleted;
+    return $result;
 }
 
 function resetGroupStatus($job_id, $group_id) {
