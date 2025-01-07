@@ -47,19 +47,6 @@ if (file_put_contents($filepath, $data) !== false) {
     http_response_code(200);
     echo "File saved successfully: " . htmlspecialchars($filepath);
     $result = updateStatus($job_id, $sub_job_id, $client_id);
-    if ($result['isJobCompleted']) {
-        $url = sprintf(
-            // "http://localhost/http_server/majority.php?job_id=%s&group_count=%s",
-            "http://localhost/http_server/m-first.php?job_id=%s&group_count=%s",
-            urlencode($job_id),
-            urlencode($result['group_count']), // TODO: group数を動的に変える
-        );
-        
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_exec($ch);
-        curl_close($ch);
-    }
 } else {
     http_response_code(500);
     echo "Failed to save file.";
@@ -80,6 +67,20 @@ if ($isGroupCompleted) {
         urlencode($job_id),
         urlencode($group_id), // TODO: group数を動的に変える
         urlencode(3) // TODO: 並列数を動的に変える
+    );
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_exec($ch);
+    curl_close($ch);
+}
+
+if ($result['isJobCompleted']) {
+    $url = sprintf(
+        // "http://localhost/http_server/majority.php?job_id=%s&group_count=%s",
+        "http://localhost/http_server/m-first.php?job_id=%s&group_count=%s",
+        urlencode($job_id),
+        urlencode($result['group_count']), // TODO: group数を動的に変える
     );
     
     $ch = curl_init();
