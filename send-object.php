@@ -1,14 +1,20 @@
 <?php
+$start_time = microtime(true);
 
-include 'handler.php';
+require_once 'handler.php';
+require_once 'common.php';
 
-if (isset($_GET['ID'])) {
-    $client_id = $_GET['ID'];
-} else {
+if (!isset($_GET['ID'])) {
     http_response_code(400); // Bad Request
     echo "No client_id specified.";
     exit;
 }
+$client_id = $_GET['ID'];
+
+$logFile = __DIR__ . '/logs/send_object_' . $client_id . ".log";
+
+writeSeparator($logFile);
+writeLog("Program started", $logFile);
 
 $result = distributeJob($client_id);
 $filename = $result["filename"];
@@ -59,4 +65,11 @@ if (file_exists($filename)) {
     echo "DBから取得したファイル名が不正です" . htmlspecialchars($filename);
     exit;
 }
+
+$end_time = microtime(true);
+$formatted_time = number_format(($end_time - $start_time) * 1000, 3) . " ms";
+
+writeLog("Program completed. Total execution time: " . $formatted_time, $logFile);
+writeSeparator($logFile);
+
 ?>
