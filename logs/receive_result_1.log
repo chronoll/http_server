@@ -12,3 +12,69 @@
 
 ===========================================================
 
+
+===========================================================
+
+[2025-01-09 07:30:36] Program started
+[2025-01-09 07:30:36] getClientID completed. Execution time: 1.121 ms
+[2025-01-09 07:30:36] Client ID mismatch. Expected: , Actual: 1
+
+===========================================================
+
+[2025-01-09 08:36:20] Program started
+[2025-01-09 08:36:20] getClientID completed. Execution time: 1.015 ms
+[2025-01-09 08:36:20] Client ID mismatch. Expected: , Actual: 1
+
+===========================================================
+
+[2025-01-09 08:44:18] Program started
+[2025-01-09 08:44:18] getClientID completed. Execution time: 1.593 ms
+[2025-01-09 08:44:18] Client ID mismatch. Expected: , Actual: 1
+
+===========================================================
+
+[2025-01-09 08:46:11] Program started
+[2025-01-09 08:46:11] getClientID completed. Execution time: 0.795 ms
+[2025-01-09 08:46:11] Client ID mismatch. Expected: , Actual: 1
+
+===========================================================
+
+[2025-01-09 08:56:34] Program started
+[2025-01-09 08:56:34] getClientID completed. Execution time: 1.149 ms
+[2025-01-09 08:56:34] Read file completed. Execution time: 0.022 ms
+[2025-01-09 08:56:34] File saved successfully: uploads/job_1/group_1/result_0
+[2025-01-09 08:56:34] Write file completed. Execution time: 13.192 ms
+[2025-01-09 08:56:34] getGroupStatus completed. Execution time: 0.772 ms
+[2025-01-09 08:56:34] Merge request completed. Execution time (not actual merge.php execution time, but just request): 1.313 ms
+[2025-01-09 08:56:34] Program completed. Total execution time: 18.400 ms
+
+===========================================================
+
+
+===========================================================
+
+[2025-01-09 09:04:22] Program started
+[2025-01-09 09:04:22] getClientID completed. Execution time: 1.034 ms
+[2025-01-09 09:04:22] Read file completed. Execution time: 0.020 ms
+[2025-01-09 09:04:22] File saved successfully: uploads/job_1/group_1/result_2
+[2025-01-09 09:04:22] Write file completed. Execution time: 3.405 ms
+[2025-01-09 09:04:22] getGroupStatus completed. Execution time: 1.125 ms
+[2025-01-09 09:04:22] Group 1 is not completed yet.
+[2025-01-09 09:04:22] Program completed. Total execution time: 7.635 ms
+
+===========================================================
+
+
+===========================================================
+
+[2025-01-09 09:11:44] Program started
+[2025-01-09 09:11:44] getClientID completed. Execution time: 1.021 ms
+[2025-01-09 09:11:44] Read file completed. Execution time: 0.017 ms
+[2025-01-09 09:11:44] File saved successfully: uploads/job_1/group_1/result_3
+[2025-01-09 09:11:44] Write file completed. Execution time: 2.685 ms
+[2025-01-09 09:11:44] getGroupStatus completed. Execution time: 1.025 ms
+[2025-01-09 09:11:44] Group 1 is not completed yet.
+[2025-01-09 09:11:44] Program completed. Total execution time: 6.741 ms
+
+===========================================================
+
