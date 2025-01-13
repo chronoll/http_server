@@ -137,7 +137,7 @@ function getGroupStatus($job_id, $group_id) {
 }
 
 function updateStatus($job_id, $sub_job_id, $client_id) {
-    $isJobCompleted = false; // ジョブ完了フラグを更新したかどうか
+    $result['isJobCompleted'] = false; // ジョブ完了フラグを更新したかどうか
     try {
         $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
@@ -176,16 +176,23 @@ function updateStatus($job_id, $sub_job_id, $client_id) {
         $checkStmt->bindValue(':status0', SubJobStatus::NoDistribution->value, PDO::PARAM_INT);
         $checkStmt->bindValue(':status2', SubJobStatus::ResultReceived->value, PDO::PARAM_INT);
         $checkStmt->execute();
-        $result = $checkStmt->fetch(PDO::FETCH_ASSOC);
+        $checkResult = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
         // 3. 条件に応じて table_registry の更新
-        if ($result['total'] > 0) {
-            if ($result['has_zero'] == 0) {
-                if ($result['has_two'] == $result['total']) {
+        if ($checkResult['total'] > 0) {
+            if ($checkResult['has_zero'] == 0) {
+                if ($checkResult['has_two'] == $checkResult['total']) {
                     $updateRegistrySql = "UPDATE table_registry SET status = :status WHERE id = :job_id";
                     $updateStmt = $pdo->prepare($updateRegistrySql);
                     $updateStmt->bindValue(':status', JobStatus::ResultsAllReceived->value, PDO::PARAM_INT);
-                    $isJobCompleted = true; // ジョブ完了フラグを立てる
+                    $result['isJobCompleted'] = true; // ジョブ完了フラグを立てる
+
+                    // 最後尾のグループ番号を取得
+                    $getLastGroupIdSql = "SELECT group_id FROM `$table_name` ORDER BY id DESC LIMIT 1";
+                    $getLastGroupIdStmt = $pdo->prepare($getLastGroupIdSql);
+                    $getLastGroupIdStmt->execute();
+                    $lastGroupRecord = $getLastGroupIdStmt->fetch(PDO::FETCH_ASSOC);
+                    $result['group_count'] = $lastGroupRecord['group_id'];
                 } else {
                     $updateRegistrySql = "UPDATE table_registry SET status = :status WHERE id = :job_id";
                     $updateStmt = $pdo->prepare($updateRegistrySql);
@@ -207,12 +214,14 @@ function updateStatus($job_id, $sub_job_id, $client_id) {
         $pdo = null;
     }
 
-    return $isJobCompleted;
+    return $result;
 }
 
 function resetGroupStatus($job_id, $group_id) {
     try {
         $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
+
+        $pdo->beginTransaction();
 
         // テーブル名の取得
         $getTableNameSql = "SELECT table_name FROM table_registry WHERE id = :job_id FOR UPDATE";
@@ -237,8 +246,36 @@ function resetGroupStatus($job_id, $group_id) {
         $stmt->bindParam(':group_id', $group_id);
         $stmt->execute();
 
+        // groupの全clientをNULLに更新
+        $sqlClient = "UPDATE `$table_name` SET client = NULL WHERE group_id = :group_id";
+        $stmtClient = $pdo->prepare($sqlClient);
+        $stmtClient->bindParam(':group_id', $group_id);
+        $stmtClient->execute();
+
+        // ジョブ全体のstatusを確認
+        $checkSql = "SELECT COUNT(*) AS total, 
+                            SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END) AS has_zero 
+                     FROM `$table_name`";
+        $checkStmt = $pdo->prepare($checkSql);
+        $checkStmt->execute();
+        $result = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+        // 条件に応じて table_registry を更新
+        if ($result['total'] > 0) {
+            $newStatus = ($result['has_zero'] == $result['total']) ? 0 : 1;
+
+            $updateRegistrySql = "UPDATE table_registry SET status = :status WHERE id = :job_id";
+            $updateStmt = $pdo->prepare($updateRegistrySql);
+            $updateStmt->bindValue(':status', $newStatus, PDO::PARAM_INT);
+            $updateStmt->bindParam(':job_id', $job_id, PDO::PARAM_INT);
+            $updateStmt->execute();
+        }
+
         $pdo->commit();
     } catch(PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         http_response_code(500);
         echo 'Connection failed: ' . $e->getMessage();
     } finally {
@@ -281,6 +318,77 @@ function getClientID($job_id, $sub_job_id) {
 
         return $result['client'];
     } catch(PDOException $e) {
+        http_response_code(500);
+        echo 'Connection failed: ' . $e->getMessage();
+    } finally {
+        $pdo = null;
+    }
+}
+
+function addGroup($job_id) {
+    try {
+        // データベース接続
+        $pdo =  new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
+
+        $pdo->beginTransaction();
+
+        // テーブル名の取得
+        $getTableNameSql = "SELECT table_name, rank_count FROM table_registry WHERE id = :job_id";
+        $getTableNameStmt = $pdo->prepare($getTableNameSql);
+        $getTableNameStmt->bindParam(":job_id", $job_id, PDO::PARAM_INT);
+        $getTableNameStmt->execute();
+        $table_registry_record = $getTableNameStmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$table_registry_record) {
+            http_response_code(500);
+            echo "No table found with the given job_id.";
+            exit;
+        }
+
+        $table_name = $table_registry_record['table_name'];
+        $rank_count = $table_registry_record['rank_count'];
+
+        // 最後尾のgroup_idを取得
+        $getLastGroupIdSql = "SELECT group_id FROM `$table_name` ORDER BY id DESC LIMIT 1";
+        $getLastGroupIdStmt = $pdo->prepare($getLastGroupIdSql);
+        $getLastGroupIdStmt->execute();
+        $lastGroupRecord = $getLastGroupIdStmt->fetch(PDO::FETCH_ASSOC);
+
+        $next_group_number = intval($lastGroupRecord['group_id']) + 1; // 次のgroup_id
+        
+        for ($rank = 0; $rank < $rank_count; $rank++) {
+            $sql = "INSERT INTO `$table_name` (group_id, rank) VALUES (:group_id, :rank)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':group_id', $next_group_number, PDO::PARAM_INT);
+            $stmt->bindParam(':rank', $rank, PDO::PARAM_INT);
+            $stmt->execute();
+        }
+
+        // ジョブ全体のstatusを確認
+        $checkSql = "SELECT COUNT(*) AS total, 
+                            SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END) AS has_zero 
+                     FROM `$table_name`";
+        $checkStmt = $pdo->prepare($checkSql);
+        $checkStmt->execute();
+        $result = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+        // 条件に応じて table_registry を更新
+        if ($result['total'] > 0) {
+            $newStatus = ($result['has_zero'] == $result['total']) ? 0 : 1;
+
+            $updateRegistrySql = "UPDATE table_registry SET status = :status WHERE id = :job_id";
+            $updateStmt = $pdo->prepare($updateRegistrySql);
+            $updateStmt->bindValue(':status', $newStatus, PDO::PARAM_INT);
+            $updateStmt->bindParam(':job_id', $job_id, PDO::PARAM_INT);
+            $updateStmt->execute();
+        }
+
+        $pdo->commit();
+
+    } catch(PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         http_response_code(500);
         echo 'Connection failed: ' . $e->getMessage();
     } finally {

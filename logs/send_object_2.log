@@ -1,0 +1,155 @@
+
+===========================================================
+
+[2025-01-08 10:36:18] Program started
+[2025-01-08 10:36:18] Distribute job completed. Execution time: 4.912 ms
+[2025-01-08 10:36:18] Clean buffer completed. Execution time: 0.007 ms
+[2025-01-08 10:36:18] Sending headers:
+[2025-01-08 10:36:18]   Content-Length: 99672
+[2025-01-08 10:36:18]   MPI-Rank: 2
+[2025-01-08 10:36:18]   Group-ID: 1
+[2025-01-08 10:36:18]   Job-ID: 1
+[2025-01-08 10:36:18]   Sub-Job-ID: 3
+[2025-01-08 10:36:18] Send headers completed. Execution time: 0.328 ms
+[2025-01-08 10:36:18] Open file completed. Execution time: 0.042 ms
+[2025-01-08 10:36:18] Output file completed. Execution time: 0.258 ms
+[2025-01-08 10:36:18] Timer request completed. Execution time (not actual timer.php execution time, but just request): 4.950 ms
+[2025-01-08 10:36:18] Program completed. Total execution time: 12.792 ms
+
+===========================================================
+
+
+===========================================================
+
+[2025-01-09 07:30:33] Program started
+[2025-01-09 07:30:33] Distribute job completed. Execution time: 3.646 ms
+[2025-01-09 07:30:33] Clean buffer completed. Execution time: 0.003 ms
+[2025-01-09 07:30:33] Sending headers:
+[2025-01-09 07:30:33]   Content-Length: 99672
+[2025-01-09 07:30:33]   MPI-Rank: 1
+[2025-01-09 07:30:33]   Group-ID: 1
+[2025-01-09 07:30:33]   Job-ID: 1
+[2025-01-09 07:30:33]   Sub-Job-ID: 2
+[2025-01-09 07:30:33] Send headers completed. Execution time: 0.122 ms
+[2025-01-09 07:30:33] Open file completed. Execution time: 0.027 ms
+[2025-01-09 07:30:33] Output file completed. Execution time: 0.323 ms
+[2025-01-09 07:30:33] Program completed. Total execution time: 6.126 ms
+
+===========================================================
+
+
+===========================================================
+
+[2025-01-09 08:36:16] Program started
+[2025-01-09 08:36:16] Distribute job completed. Execution time: 5.509 ms
+[2025-01-09 08:36:16] Clean buffer completed. Execution time: 0.011 ms
+[2025-01-09 08:36:16] Sending headers:
+[2025-01-09 08:36:16]   Content-Length: 99608
+[2025-01-09 08:36:16]   MPI-Rank: 3
+[2025-01-09 08:36:16]   Group-ID: 1
+[2025-01-09 08:36:16]   Job-ID: 1
+[2025-01-09 08:36:16]   Sub-Job-ID: 4
+[2025-01-09 08:36:16] Send headers completed. Execution time: 0.167 ms
+[2025-01-09 08:36:16] Open file completed. Execution time: 0.032 ms
+[2025-01-09 08:36:16] Output file completed. Execution time: 0.293 ms
+[2025-01-09 08:36:16] Program completed. Total execution time: 7.390 ms
+
+===========================================================
+
+
+===========================================================
+
+[2025-01-09 08:44:14] Program started
+[2025-01-09 08:44:14] Distribute job completed. Execution time: 4.880 ms
+[2025-01-09 08:44:14] Clean buffer completed. Execution time: 0.009 ms
+[2025-01-09 08:44:14] Sending headers:
+[2025-01-09 08:44:14]   Content-Length: 99608
+[2025-01-09 08:44:14]   MPI-Rank: 1
+[2025-01-09 08:44:14]   Group-ID: 1
+[2025-01-09 08:44:14]   Job-ID: 1
+[2025-01-09 08:44:14]   Sub-Job-ID: 2
+[2025-01-09 08:44:14] Send headers completed. Execution time: 0.404 ms
+[2025-01-09 08:44:14] Open file completed. Execution time: 0.062 ms
+[2025-01-09 08:44:14] Output file completed. Execution time: 0.681 ms
+[2025-01-09 08:44:14] Program completed. Total execution time: 9.043 ms
+
+===========================================================
+
+
+===========================================================
+
+[2025-01-09 08:46:07] Program started
+[2025-01-09 08:46:07] Distribute job completed. Execution time: 7.552 ms
+[2025-01-09 08:46:07] Clean buffer completed. Execution time: 0.005 ms
+[2025-01-09 08:46:07] Sending headers:
+[2025-01-09 08:46:07]   Content-Length: 99608
+[2025-01-09 08:46:07]   MPI-Rank: 2
+[2025-01-09 08:46:07]   Group-ID: 1
+[2025-01-09 08:46:07]   Job-ID: 1
+[2025-01-09 08:46:07]   Sub-Job-ID: 3
+[2025-01-09 08:46:07] Send headers completed. Execution time: 0.170 ms
+[2025-01-09 08:46:07] Open file completed. Execution time: 0.033 ms
+[2025-01-09 08:46:07] Output file completed. Execution time: 0.330 ms
+[2025-01-09 08:46:07] Timer request completed. Execution time (not actual timer.php execution time, but just request): 4.639 ms
+[2025-01-09 08:46:07] Program completed. Total execution time: 14.789 ms
+
+===========================================================
+
+
+===========================================================
+
+[2025-01-09 08:56:34] Program started
+[2025-01-09 08:56:34] Distribute job completed. Execution time: 4.866 ms
+[2025-01-09 08:56:34] Clean buffer completed. Execution time: 0.006 ms
+[2025-01-09 08:56:34] Sending headers:
+[2025-01-09 08:56:34]   Content-Length: 99608
+[2025-01-09 08:56:34]   MPI-Rank: 1
+[2025-01-09 08:56:34]   Group-ID: 1
+[2025-01-09 08:56:34]   Job-ID: 1
+[2025-01-09 08:56:34]   Sub-Job-ID: 2
+[2025-01-09 08:56:34] Send headers completed. Execution time: 0.185 ms
+[2025-01-09 08:56:34] Open file completed. Execution time: 0.032 ms
+[2025-01-09 08:56:34] Output file completed. Execution time: 0.360 ms
+[2025-01-09 08:56:34] Program completed. Total execution time: 8.172 ms
+
+===========================================================
+
+
+===========================================================
+
+[2025-01-09 09:04:22] Program started
+[2025-01-09 09:04:22] Distribute job completed. Execution time: 3.651 ms
+[2025-01-09 09:04:22] Clean buffer completed. Execution time: 0.006 ms
+[2025-01-09 09:04:22] Sending headers:
+[2025-01-09 09:04:22]   Content-Length: 99608
+[2025-01-09 09:04:22]   MPI-Rank: 0
+[2025-01-09 09:04:22]   Group-ID: 1
+[2025-01-09 09:04:22]   Job-ID: 1
+[2025-01-09 09:04:22]   Sub-Job-ID: 1
+[2025-01-09 09:04:22] Send headers completed. Execution time: 0.139 ms
+[2025-01-09 09:04:22] Open file completed. Execution time: 0.026 ms
+[2025-01-09 09:04:22] Output file completed. Execution time: 0.281 ms
+[2025-01-09 09:04:22] Program completed. Total execution time: 5.602 ms
+
+===========================================================
+
+
+===========================================================
+
+[2025-01-09 09:11:44] Program started
+[2025-01-09 09:11:44] Distribute job completed. Execution time: 5.361 ms
+[2025-01-09 09:11:44] Clean buffer completed. Execution time: 0.005 ms
+[2025-01-09 09:11:44] Sending headers:
+[2025-01-09 09:11:44]   Content-Length: 99608
+[2025-01-09 09:11:44]   MPI-Rank: 2
+[2025-01-09 09:11:44]   Group-ID: 1
+[2025-01-09 09:11:44]   Job-ID: 1
+[2025-01-09 09:11:44]   Sub-Job-ID: 3
+[2025-01-09 09:11:44] Send headers completed. Execution time: 0.224 ms
+[2025-01-09 09:11:44] Open file completed. Execution time: 0.045 ms
+[2025-01-09 09:11:44] Output file completed. Execution time: 0.347 ms
+[2025-01-09 09:11:44] Timer request completed. Execution time (not actual timer.php execution time, but just request): 4.512 ms
+[2025-01-09 09:11:44] Program completed. Total execution time: 12.571 ms
+
+===========================================================
+

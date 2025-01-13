@@ -9,7 +9,7 @@ $testCases = [
     // ['GROUP' => 2, 'RANK' => 3, 'PROC' => 6],
     // ['GROUP' => 2, 'RANK' => 3, 'PROC' => 7],
     // ['GROUP' => 2, 'RANK' => 3, 'PROC' => 12],
-    ['GROUP' => 4, 'RANK' => 3, 'PROC' => 11],
+    ['GROUP' => 1, 'RANK' => 4, 'PROC' => 4],
 ];
 
 $DIRECTORY = "/home/kurotaka/http_client";
@@ -25,6 +25,12 @@ foreach ($testCases as $testCase) {
     echo "Testing with GROUP=$GROUP, RANK=$RANK, PROC=$PROC\n";
 
     resetMatrixTable($GROUP, $RANK);
+
+    // $cleanUpCommand = "sh " . $DIRECTORY . "/cleanup.sh";
+    // exec($cleanUpCommand, $output_, $returnVar_);
+    // if ($returnVar_ !== 0) {
+    //     throw new Exception("Command failed:\n" . implode("\n", $output_));
+    // }
 
     try {
         // 権限の付与
