@@ -93,7 +93,7 @@ $formatted_time = number_format(($get_group_status_end_time - $get_group_status_
 writeLog("getGroupStatus completed. Execution time: " . $formatted_time, $logFile);
 
 foreach ($groupStatus as $status) {
-    if ($status['status'] != SubJobStatus::ResultReceived->value) {
+    if ($status['status'] != SubJobStatus::ResultReceived) {
         $isGroupCompleted = false;
         writeLog("Group $group_id is not completed yet.", $logFile);
         break;

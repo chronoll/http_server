@@ -19,7 +19,7 @@ sleep($TIMEOUT);
 $results = getGroupStatus($job_id, $group_id);
 
 foreach ($results as $result) {
-    if ($result['status'] == SubJobStatus::ResultPending->value) {
+    if ($result['status'] == SubJobStatus::ResultPending) {
         resetGroupStatus($job_id, $group_id);
         deleteGroupDirectory($job_id, $group_id);
         break;

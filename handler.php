@@ -10,7 +10,7 @@ function distributeJob($client_id) {
         // status=0, 1のジョブをIDの昇順で取得
         $sql = "SELECT * FROM table_registry WHERE status <= :status ORDER BY id ASC FOR UPDATE";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':status', JobStatus::startedDistribution->value, PDO::PARAM_INT);
+        $stmt->bindValue(':status', JobStatus::StartedDistribution, PDO::PARAM_INT);
         $stmt->execute();
         $table_registry_record = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -27,7 +27,7 @@ function distributeJob($client_id) {
             $search_table_name = $job["table_name"];
             $sql = "SELECT * FROM `$search_table_name` WHERE status = :status ORDER BY id ASC LIMIT 1 FOR UPDATE";
             $stmt = $pdo->prepare($sql);
-            $stmt->bindValue(':status', SubJobStatus::NoDistribution->value, PDO::PARAM_INT);
+            $stmt->bindValue(':status', SubJobStatus::NoDistribution, PDO::PARAM_INT);
             $stmt->execute();
             $job_table_record = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($job_table_record) {
@@ -55,7 +55,7 @@ function distributeJob($client_id) {
         // jobテーブルのstatusを1に更新, client_idを登録
         $sql = "UPDATE `$table_name` SET status = :status, client = :client_id WHERE id = :sub_job_id";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':status', SubJobStatus::ResultPending->value, PDO::PARAM_INT);
+        $stmt->bindValue(':status', SubJobStatus::ResultPending, PDO::PARAM_INT);
         $stmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
         $stmt->bindParam(':sub_job_id', $sub_job_id);
         $stmt->execute();
@@ -64,7 +64,7 @@ function distributeJob($client_id) {
         if ($sub_job_id == 1) {
             $sql = "UPDATE table_registry SET status = :status WHERE table_name = :table_name";
             $stmt = $pdo->prepare($sql);
-            $stmt->bindValue(':status', JobStatus::startedDistribution->value, PDO::PARAM_INT);
+            $stmt->bindValue(':status', JobStatus::StartedDistribution, PDO::PARAM_INT);
             $stmt->bindParam(':table_name', $table_name);
             $stmt->execute();
         }
@@ -162,7 +162,7 @@ function updateStatus($job_id, $sub_job_id, $client_id) {
         // 1. sub_job テーブルの更新
         $sql = "UPDATE `$table_name` SET status = :status WHERE id = :sub_job_id";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':status', SubJobStatus::ResultReceived->value, PDO::PARAM_INT);
+        $stmt->bindValue(':status', SubJobStatus::ResultReceived, PDO::PARAM_INT);
         $stmt->bindParam(':sub_job_id', $sub_job_id);
         $stmt->execute();
 
@@ -173,8 +173,8 @@ function updateStatus($job_id, $sub_job_id, $client_id) {
                         SUM(CASE WHEN status = :status2 THEN 1 ELSE 0 END) AS has_two
                      FROM `$table_name`";
         $checkStmt = $pdo->prepare($checkSql);
-        $checkStmt->bindValue(':status0', SubJobStatus::NoDistribution->value, PDO::PARAM_INT);
-        $checkStmt->bindValue(':status2', SubJobStatus::ResultReceived->value, PDO::PARAM_INT);
+        $checkStmt->bindValue(':status0', SubJobStatus::NoDistribution, PDO::PARAM_INT);
+        $checkStmt->bindValue(':status2', SubJobStatus::ResultReceived, PDO::PARAM_INT);
         $checkStmt->execute();
         $checkResult = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -184,7 +184,7 @@ function updateStatus($job_id, $sub_job_id, $client_id) {
                 if ($checkResult['has_two'] == $checkResult['total']) {
                     $updateRegistrySql = "UPDATE table_registry SET status = :status WHERE id = :job_id";
                     $updateStmt = $pdo->prepare($updateRegistrySql);
-                    $updateStmt->bindValue(':status', JobStatus::ResultsAllReceived->value, PDO::PARAM_INT);
+                    $updateStmt->bindValue(':status', JobStatus::ResultsAllReceived, PDO::PARAM_INT);
                     $result['isJobCompleted'] = true; // ジョブ完了フラグを立てる
 
                     // 最後尾のグループ番号を取得
@@ -196,7 +196,7 @@ function updateStatus($job_id, $sub_job_id, $client_id) {
                 } else {
                     $updateRegistrySql = "UPDATE table_registry SET status = :status WHERE id = :job_id";
                     $updateStmt = $pdo->prepare($updateRegistrySql);
-                    $updateStmt->bindValue(':status', JobStatus::ResultsPending->value, PDO::PARAM_INT);
+                    $updateStmt->bindValue(':status', JobStatus::ResultsPending, PDO::PARAM_INT);
                 }
                 $updateStmt->bindParam(':job_id', $job_id, PDO::PARAM_INT);
                 $updateStmt->execute();
@@ -242,7 +242,7 @@ function resetGroupStatus($job_id, $group_id) {
         // groupの全statusを0に更新
         $sql = "UPDATE `$table_name` SET status = :status WHERE group_id = :group_id";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':status', SubJobStatus::NoDistribution->value, PDO::PARAM_INT);
+        $stmt->bindValue(':status', SubJobStatus::NoDistribution, PDO::PARAM_INT);
         $stmt->bindParam(':group_id', $group_id);
         $stmt->execute();
 
