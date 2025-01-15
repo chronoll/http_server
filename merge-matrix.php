@@ -33,29 +33,40 @@ if (!$mergedFile) {
     exit;
 }
 
-// 各 `result_[rank]` ファイルを確認
+// 各 `result_[rank]` ファイルから必要な行を取得して `merged` に書き込む
 for ($i = 0; $i < $rank; $i++) {
     $resultFilePath = $fullDir . "result_" . $i;
     if (!file_exists($resultFilePath)) {
-        continue; // ファイルが存在しない場合はスキップ
+        http_response_code(404);
+        echo "File not found: " . htmlspecialchars($resultFilePath);
+        fclose($mergedFile);
+        exit;
     }
 
-    // ファイルの内容を全て読み込む
-    $lines = file($resultFilePath);
-    if ($lines === false) {
-        continue; // ファイルが読めない場合はスキップ
+    // ファイルを1行ずつ読み込む
+    $file = fopen($resultFilePath, 'r');
+    if (!$file) {
+        http_response_code(500);
+        echo "Failed to open file: " . htmlspecialchars($resultFilePath);
+        fclose($mergedFile);
+        exit;
     }
 
-    // 3行目（インデックス2）が "id0:" で始まるか確認
-    if (isset($lines[2]) && strpos($lines[2], "id0:") === 0) {
-        // ファイル内の全行を確認
-        foreach ($lines as $line) {
-            // "Sums =" で始まる行を見つけたら書き込む
-            if (strpos($line, "Sums =") === 0) {
-                fwrite($mergedFile, $line);
-                break; // Sums = の行を見つけたら、このファイルの処理を終了
-            }
+    // 指定の行を取得
+    $line = null;
+    for ($j = 0; $j <= $i; $j++) {
+        $line = fgets($file);
+        if ($line === false) {
+            break; // 行が存在しない場合、ループを終了
         }
+    }
+    fclose($file);
+
+    // `merged` に行を書き込む
+    if ($line !== null) {
+        fwrite($mergedFile, $line);
+    } else {
+        fwrite($mergedFile, "\n"); // 行がなければ空行を追加
     }
 }
 
@@ -64,4 +75,5 @@ fclose($mergedFile);
 
 http_response_code(200);
 echo "Merged file created successfully: " . htmlspecialchars($mergedFilePath);
+
 ?>
