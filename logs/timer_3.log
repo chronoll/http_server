@@ -1,0 +1,22 @@
+
+===========================================================
+
+[2025-01-15 10:01:18] Program started: Sleep3s...
+[2025-01-15 10:01:21] Sleep completed
+[2025-01-15 10:01:21] [getGroupStatus] MySQL connection established. Execution time: 0.973 ms
+[2025-01-15 10:01:21] [getGroupStatus] SELECT table_name FROM table_registry WHERE id = :job_id / Execution time: 0.758 ms
+[2025-01-15 10:01:21] [getGroupStatus] SELECT status FROM `matrix` WHERE group_id = :group_id / Execution time: 0.672 ms
+[2025-01-15 10:01:21] getGroupStatus completed. Execution time: 2.842 ms
+
+===========================================================
+
+[2025-01-15 10:04:25] Program started: Sleep3s...
+[2025-01-15 10:04:28] Sleep completed
+[2025-01-15 10:04:28] [getGroupStatus] MySQL connection established. Execution time: 0.353 ms
+[2025-01-15 10:04:28] [getGroupStatus] SELECT table_name FROM table_registry WHERE id = :job_id / Execution time: 0.275 ms
+[2025-01-15 10:04:28] [getGroupStatus] SELECT status FROM `matrix` WHERE group_id = :group_id / Execution time: 0.150 ms
+[2025-01-15 10:04:28] getGroupStatus completed. Execution time: 0.920 ms
+[2025-01-15 10:04:28] Program completed. Total execution time: 3,003.253 ms
+
+===========================================================
+

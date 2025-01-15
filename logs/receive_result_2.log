@@ -215,3 +215,56 @@
 
 ===========================================================
 
+
+===========================================================
+
+[2025-01-15 10:01:19] Program started
+[2025-01-15 10:01:19] [getClientID] MySQL connection established. Execution time: 0.147 ms
+[2025-01-15 10:01:19] [getClientID] SELECT table_name FROM table_registry WHERE id = :job_id / Execution time: 0.543 ms
+[2025-01-15 10:01:19] [getClientID] SELECT client FROM `matrix` WHERE id = :sub_job_id / Execution time: 0.498 ms
+[2025-01-15 10:01:19] getClientID completed. Execution time: 1.528 ms
+[2025-01-15 10:01:19] Read file completed. Execution time: 0.014 ms
+[2025-01-15 10:01:19] File saved successfully: uploads/job_1/group_1/result_1
+[2025-01-15 10:01:19] [updateStatus] MySQL connection established. Execution time: 0.112 ms
+[2025-01-15 10:01:19] [updateStatus] SELECT table_name FROM table_registry WHERE id = :job_id FOR UPDATE / Execution time: 0.853 ms
+[2025-01-15 10:01:19] [updateStatus] UPDATE `matrix` SET status = :status WHERE id = :sub_job_id / Execution time: 0.317 ms
+[2025-01-15 10:01:19] [updateStatus] SELECT COUNT(*) AS total, SUM(...) FROM `matrix` / Execution time: 0.309 ms
+[2025-01-15 10:01:19] [updateStatus] SELECT group_id FROM `matrix` ORDER BY id DESC LIMIT 1 / Execution time: 0.167 ms
+[2025-01-15 10:01:19] [updateStatus] UPDATE table_registry SET status = :status WHERE id = :job_id / Execution time: 0.382 ms
+[2025-01-15 10:01:19] updateStatus completed. Execution time: 3.099 ms
+[2025-01-15 10:01:19] Write file completed. Execution time: 3.347 ms
+[2025-01-15 10:01:19] [getGroupStatus] MySQL connection established. Execution time: 0.059 ms
+[2025-01-15 10:01:19] [getGroupStatus] SELECT table_name FROM table_registry WHERE id = :job_id / Execution time: 0.393 ms
+[2025-01-15 10:01:19] [getGroupStatus] SELECT status FROM `matrix` WHERE group_id = :group_id / Execution time: 0.221 ms
+[2025-01-15 10:01:19] getGroupStatus completed. Execution time: 0.841 ms
+[2025-01-15 10:01:19] Merge request completed. Execution time (not actual merge.php execution time, but just request): 1.871 ms
+[2025-01-15 10:01:19] Majority request completed. Execution time (not actual script execution time, but just request): 7.467 ms
+[2025-01-15 10:01:19] Program completed. Total execution time: 17.822 ms
+
+===========================================================
+
+
+===========================================================
+
+[2025-01-15 10:04:26] Program started
+[2025-01-15 10:04:26] [getClientID] MySQL connection established. Execution time: 0.488 ms
+[2025-01-15 10:04:26] [getClientID] SELECT table_name FROM table_registry WHERE id = :job_id / Execution time: 0.645 ms
+[2025-01-15 10:04:26] [getClientID] SELECT client FROM `matrix` WHERE id = :sub_job_id / Execution time: 0.614 ms
+[2025-01-15 10:04:26] getClientID completed. Execution time: 2.152 ms
+[2025-01-15 10:04:26] Read file completed. Execution time: 0.021 ms
+[2025-01-15 10:04:26] File saved successfully: uploads/job_1/group_1/result_0
+[2025-01-15 10:04:26] [updateStatus] MySQL connection established. Execution time: 0.233 ms
+[2025-01-15 10:04:26] [updateStatus] SELECT table_name FROM table_registry WHERE id = :job_id FOR UPDATE / Execution time: 3.381 ms
+[2025-01-15 10:04:26] [updateStatus] UPDATE `matrix` SET status = :status WHERE id = :sub_job_id / Execution time: 0.546 ms
+[2025-01-15 10:04:26] [updateStatus] SELECT COUNT(*) AS total, SUM(...) FROM `matrix` / Execution time: 0.410 ms
+[2025-01-15 10:04:26] updateStatus completed. Execution time: 6.144 ms
+[2025-01-15 10:04:26] Write file completed. Execution time: 6.758 ms
+[2025-01-15 10:04:26] [getGroupStatus] MySQL connection established. Execution time: 0.133 ms
+[2025-01-15 10:04:26] [getGroupStatus] SELECT table_name FROM table_registry WHERE id = :job_id / Execution time: 0.434 ms
+[2025-01-15 10:04:26] [getGroupStatus] SELECT status FROM `matrix` WHERE group_id = :group_id / Execution time: 0.252 ms
+[2025-01-15 10:04:26] getGroupStatus completed. Execution time: 1.023 ms
+[2025-01-15 10:04:26] Merge request completed. Execution time (not actual merge.php execution time, but just request): 1.898 ms
+[2025-01-15 10:04:26] Program completed. Total execution time: 14.460 ms
+
+===========================================================
+

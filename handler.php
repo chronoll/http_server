@@ -303,18 +303,30 @@ function updateStatus($job_id, $sub_job_id, $client_id, $logFile) {
     return $result;
 }
 
-function resetGroupStatus($job_id, $group_id) {
+function resetGroupStatus($job_id, $group_id, $logFile) {
     try {
+        $mysql_connect_start_time = microtime(true);
+
         $pdo = new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
         $pdo->beginTransaction();
 
+        $mysql_connect_end_time = microtime(true);
+        $formatted_time = number_format(($mysql_connect_end_time - $mysql_connect_start_time) * 1000, 3) . " ms";
+        writeLog("[resetGroupStatus] MySQL connection established. Execution time: " . $formatted_time, $logFile);
+
         // テーブル名の取得
+        $get_table_name_start_time = microtime(true);
+
         $getTableNameSql = "SELECT table_name FROM table_registry WHERE id = :job_id FOR UPDATE";
         $getTableNameStmt = $pdo->prepare($getTableNameSql);
         $getTableNameStmt->bindParam(":job_id", $job_id);
         $getTableNameStmt->execute();
         $table_registry_record = $getTableNameStmt->fetch(PDO::FETCH_ASSOC);
+
+        $get_table_name_end_time = microtime(true);
+        $formatted_time = number_format(($get_table_name_end_time - $get_table_name_start_time) * 1000, 3) . " ms";
+        writeLog("[resetGroupStatus] SELECT table_name FROM table_registry WHERE id = :job_id FOR UPDATE / Execution time: " . $formatted_time, $logFile);
 
         if (!$table_registry_record) {
             $pdo->rollBack();
@@ -326,19 +338,33 @@ function resetGroupStatus($job_id, $group_id) {
         $table_name = $table_registry_record['table_name'];
 
         // groupの全statusを0に更新
+        $reset_group_status_start_time = microtime(true);
+
         $sql = "UPDATE `$table_name` SET status = :status WHERE group_id = :group_id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindValue(':status', SubJobStatus::NoDistribution, PDO::PARAM_INT);
         $stmt->bindParam(':group_id', $group_id);
         $stmt->execute();
 
+        $reset_group_status_end_time = microtime(true);
+        $formatted_time = number_format(($reset_group_status_end_time - $reset_group_status_start_time) * 1000, 3) . " ms";
+        writeLog("[resetGroupStatus] UPDATE `$table_name` SET status = :status WHERE group_id = :group_id / Execution time: " . $formatted_time, $logFile);
+
         // groupの全clientをNULLに更新
+        $reset_group_client_start_time = microtime(true);
+
         $sqlClient = "UPDATE `$table_name` SET client = NULL WHERE group_id = :group_id";
         $stmtClient = $pdo->prepare($sqlClient);
         $stmtClient->bindParam(':group_id', $group_id);
         $stmtClient->execute();
 
+        $reset_group_client_end_time = microtime(true);
+        $formatted_time = number_format(($reset_group_client_end_time - $reset_group_client_start_time) * 1000, 3) . " ms";
+        writeLog("[resetGroupStatus] UPDATE `$table_name` SET client = NULL WHERE group_id = :group_id / Execution time: " . $formatted_time, $logFile);
+
         // ジョブ全体のstatusを確認
+        $check_job_status_start_time = microtime(true);
+
         $checkSql = "SELECT COUNT(*) AS total, 
                             SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END) AS has_zero 
                      FROM `$table_name`";
@@ -346,15 +372,25 @@ function resetGroupStatus($job_id, $group_id) {
         $checkStmt->execute();
         $result = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
+        $check_job_status_end_time = microtime(true);
+        $formatted_time = number_format(($check_job_status_end_time - $check_job_status_start_time) * 1000, 3) . " ms";
+        writeLog("[resetGroupStatus] SELECT COUNT(*) AS total, SUM(...) FROM `$table_name` / Execution time: " . $formatted_time, $logFile);
+
         // 条件に応じて table_registry を更新
         if ($result['total'] > 0) {
             $newStatus = ($result['has_zero'] == $result['total']) ? 0 : 1;
+
+            $update_registry_start_time = microtime(true);
 
             $updateRegistrySql = "UPDATE table_registry SET status = :status WHERE id = :job_id";
             $updateStmt = $pdo->prepare($updateRegistrySql);
             $updateStmt->bindValue(':status', $newStatus, PDO::PARAM_INT);
             $updateStmt->bindParam(':job_id', $job_id, PDO::PARAM_INT);
             $updateStmt->execute();
+
+            $update_registry_end_time = microtime(true);
+            $formatted_time = number_format(($update_registry_end_time - $update_registry_start_time) * 1000, 3) . " ms";
+            writeLog("[resetGroupStatus] UPDATE table_registry SET status = :status WHERE id = :job_id / Execution time: " . $formatted_time, $logFile);
         }
 
         $pdo->commit();
