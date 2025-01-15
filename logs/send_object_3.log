@@ -474,3 +474,49 @@
 
 ===========================================================
 
+
+===========================================================
+
+[2025-01-15 11:08:10] Program started
+[2025-01-15 11:08:10] [distributeJob] MySQL connection established. Execution time: 0.862 ms
+[2025-01-15 11:08:10] [distributeJob] SELECT * FROM table_registry WHERE status <= :status ORDER BY id ASC FOR UPDATE / Execution time: 4.141 ms
+[2025-01-15 11:08:10] [distributeJob] SELECT * FROM `matrix` WHERE status = :status ORDER BY id ASC LIMIT 1 FOR UPDATE / Execution time: 0.694 ms
+[2025-01-15 11:08:10] [distributeJob] UPDATE `matrix` SET status = :status, client = :client_id WHERE id = :sub_job_id / Execution time: 0.525 ms
+[2025-01-15 11:08:10] Distribute job completed. Execution time: 7.921 ms
+[2025-01-15 11:08:10] Clean buffer completed. Execution time: 0.005 ms
+[2025-01-15 11:08:10] Sending headers:
+[2025-01-15 11:08:10]   Content-Length: 99568
+[2025-01-15 11:08:10]   MPI-Rank: 3
+[2025-01-15 11:08:10]   Group-ID: 1
+[2025-01-15 11:08:10]   Job-ID: 1
+[2025-01-15 11:08:10]   Sub-Job-ID: 4
+[2025-01-15 11:08:10] Send headers completed. Execution time: 0.185 ms
+[2025-01-15 11:08:10] Open file completed. Execution time: 0.030 ms
+[2025-01-15 11:08:10] Output file completed. Execution time: 0.297 ms
+[2025-01-15 11:08:10] Program completed. Total execution time: 10.852 ms
+
+===========================================================
+
+
+===========================================================
+
+[2025-01-15 11:10:19] Program started
+[2025-01-15 11:10:19] [distributeJob] MySQL connection established. Execution time: 0.233 ms
+[2025-01-15 11:10:19] [distributeJob] SELECT * FROM table_registry WHERE status <= :status ORDER BY id ASC FOR UPDATE / Execution time: 0.779 ms
+[2025-01-15 11:10:19] [distributeJob] SELECT * FROM `matrix` WHERE status = :status ORDER BY id ASC LIMIT 1 FOR UPDATE / Execution time: 0.138 ms
+[2025-01-15 11:10:19] [distributeJob] UPDATE `matrix` SET status = :status, client = :client_id WHERE id = :sub_job_id / Execution time: 0.124 ms
+[2025-01-15 11:10:19] Distribute job completed. Execution time: 2.535 ms
+[2025-01-15 11:10:19] Clean buffer completed. Execution time: 0.004 ms
+[2025-01-15 11:10:19] Sending headers:
+[2025-01-15 11:10:19]   Content-Length: 99568
+[2025-01-15 11:10:19]   MPI-Rank: 3
+[2025-01-15 11:10:19]   Group-ID: 1
+[2025-01-15 11:10:19]   Job-ID: 1
+[2025-01-15 11:10:19]   Sub-Job-ID: 4
+[2025-01-15 11:10:19] Send headers completed. Execution time: 0.250 ms
+[2025-01-15 11:10:19] Open file completed. Execution time: 0.037 ms
+[2025-01-15 11:10:19] Output file completed. Execution time: 0.291 ms
+[2025-01-15 11:10:19] Program completed. Total execution time: 4.783 ms
+
+===========================================================
+

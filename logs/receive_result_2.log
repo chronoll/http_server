@@ -372,3 +372,54 @@
 
 ===========================================================
 
+
+===========================================================
+
+[2025-01-15 11:08:11] Program started
+[2025-01-15 11:08:11] [getClientID] MySQL connection established. Execution time: 0.097 ms
+[2025-01-15 11:08:11] [getClientID] SELECT table_name FROM table_registry WHERE id = :job_id / Execution time: 0.757 ms
+[2025-01-15 11:08:11] [getClientID] SELECT client FROM `matrix` WHERE id = :sub_job_id / Execution time: 0.558 ms
+[2025-01-15 11:08:11] getClientID completed. Execution time: 1.910 ms
+[2025-01-15 11:08:11] Read file completed. Execution time: 0.019 ms
+[2025-01-15 11:08:11] File saved successfully: uploads/job_1/group_1/result_2
+[2025-01-15 11:08:11] [updateStatus] MySQL connection established. Execution time: 0.193 ms
+[2025-01-15 11:08:11] [updateStatus] SELECT table_name FROM table_registry WHERE id = :job_id FOR UPDATE / Execution time: 0.589 ms
+[2025-01-15 11:08:11] [updateStatus] UPDATE `matrix` SET status = :status WHERE id = :sub_job_id / Execution time: 0.629 ms
+[2025-01-15 11:08:11] [updateStatus] SELECT COUNT(*) AS total, SUM(...) FROM `matrix` / Execution time: 0.638 ms
+[2025-01-15 11:08:11] updateStatus completed. Execution time: 3.843 ms
+[2025-01-15 11:08:11] Write file completed. Execution time: 4.433 ms
+[2025-01-15 11:08:11] [getGroupStatus] MySQL connection established. Execution time: 0.092 ms
+[2025-01-15 11:08:11] [getGroupStatus] SELECT table_name FROM table_registry WHERE id = :job_id / Execution time: 0.536 ms
+[2025-01-15 11:08:11] [getGroupStatus] SELECT status FROM `matrix` WHERE group_id = :group_id / Execution time: 0.528 ms
+[2025-01-15 11:08:11] getGroupStatus completed. Execution time: 1.579 ms
+[2025-01-15 11:08:11] Merge request completed. Execution time (not actual merge.php execution time, but just request): 2.715 ms
+[2025-01-15 11:08:11] Program completed. Total execution time: 13.250 ms
+
+===========================================================
+
+
+===========================================================
+
+[2025-01-15 11:10:19] Program started
+[2025-01-15 11:10:19] [getClientID] MySQL connection established. Execution time: 0.113 ms
+[2025-01-15 11:10:19] [getClientID] SELECT table_name FROM table_registry WHERE id = :job_id / Execution time: 0.473 ms
+[2025-01-15 11:10:19] [getClientID] SELECT client FROM `matrix` WHERE id = :sub_job_id / Execution time: 0.506 ms
+[2025-01-15 11:10:19] getClientID completed. Execution time: 1.392 ms
+[2025-01-15 11:10:19] Read file completed. Execution time: 0.025 ms
+[2025-01-15 11:10:19] File saved successfully: uploads/job_1/group_1/result_2
+[2025-01-15 11:10:19] [updateStatus] MySQL connection established. Execution time: 0.266 ms
+[2025-01-15 11:10:19] [updateStatus] SELECT table_name FROM table_registry WHERE id = :job_id FOR UPDATE / Execution time: 1.392 ms
+[2025-01-15 11:10:19] [updateStatus] UPDATE `matrix` SET status = :status WHERE id = :sub_job_id / Execution time: 0.076 ms
+[2025-01-15 11:10:19] [updateStatus] SELECT COUNT(*) AS total, SUM(...) FROM `matrix` / Execution time: 0.091 ms
+[2025-01-15 11:10:19] [updateStatus] UPDATE table_registry SET status = :status WHERE id = :job_id / Execution time: 0.041 ms
+[2025-01-15 11:10:19] updateStatus completed. Execution time: 2.661 ms
+[2025-01-15 11:10:19] Write file completed. Execution time: 3.200 ms
+[2025-01-15 11:10:19] [getGroupStatus] MySQL connection established. Execution time: 0.064 ms
+[2025-01-15 11:10:19] [getGroupStatus] SELECT table_name FROM table_registry WHERE id = :job_id / Execution time: 0.346 ms
+[2025-01-15 11:10:19] [getGroupStatus] SELECT status FROM `matrix` WHERE group_id = :group_id / Execution time: 0.339 ms
+[2025-01-15 11:10:19] getGroupStatus completed. Execution time: 0.895 ms
+[2025-01-15 11:10:19] Merge request completed. Execution time (not actual merge.php execution time, but just request): 207.794 ms
+[2025-01-15 11:10:19] Program completed. Total execution time: 216.426 ms
+
+===========================================================
+

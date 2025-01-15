@@ -1,0 +1,11 @@
+
+===========================================================
+
+[2025-01-15 11:10:19] Program started: REQUIRED_COUNT=1
+[2025-01-15 11:10:19] File comparison completed. Execution time: 0.031 ms
+[2025-01-15 11:10:19] Write majority content to result file completed. Execution time: 0.158 ms
+[2025-01-15 11:10:19] Matching groups: [1]
+[2025-01-15 11:10:19] Program completed. Total execution time: 2.645 ms
+
+===========================================================
+

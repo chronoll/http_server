@@ -465,19 +465,31 @@ function getClientID($job_id, $sub_job_id, $logFile) {
     }
 }
 
-function addGroup($job_id) {
+function addGroup($job_id, $logFile) {
     try {
+        $mysql_connect_start_time = microtime(true);
+
         // データベース接続
         $pdo =  new PDO('mysql:host=localhost;dbname=practice;charset=utf8', 'root', 'root', array(PDO::ATTR_PERSISTENT => true));
 
         $pdo->beginTransaction();
 
+        $mysql_connect_end_time = microtime(true);
+        $formatted_time = number_format(($mysql_connect_end_time - $mysql_connect_start_time) * 1000, 3) . " ms";
+        writeLog("[addGroup] MySQL connection established. Execution time: " . $formatted_time, $logFile);
+
         // テーブル名の取得
+        $get_table_name_start_time = microtime(true);
+
         $getTableNameSql = "SELECT table_name, rank_count FROM table_registry WHERE id = :job_id";
         $getTableNameStmt = $pdo->prepare($getTableNameSql);
         $getTableNameStmt->bindParam(":job_id", $job_id, PDO::PARAM_INT);
         $getTableNameStmt->execute();
         $table_registry_record = $getTableNameStmt->fetch(PDO::FETCH_ASSOC);
+
+        $get_table_name_end_time = microtime(true);
+        $formatted_time = number_format(($get_table_name_end_time - $get_table_name_start_time) * 1000, 3) . " ms";
+        writeLog("[addGroup] SELECT table_name, rank_count FROM table_registry WHERE id = :job_id / Execution time: " . $formatted_time, $logFile);
 
         if (!$table_registry_record) {
             http_response_code(500);
@@ -489,22 +501,36 @@ function addGroup($job_id) {
         $rank_count = $table_registry_record['rank_count'];
 
         // 最後尾のgroup_idを取得
+        $get_last_group_id_start_time = microtime(true);
+
         $getLastGroupIdSql = "SELECT group_id FROM `$table_name` ORDER BY id DESC LIMIT 1";
         $getLastGroupIdStmt = $pdo->prepare($getLastGroupIdSql);
         $getLastGroupIdStmt->execute();
         $lastGroupRecord = $getLastGroupIdStmt->fetch(PDO::FETCH_ASSOC);
 
+        $get_last_group_id_end_time = microtime(true);
+        $formatted_time = number_format(($get_last_group_id_end_time - $get_last_group_id_start_time) * 1000, 3) . " ms";
+        writeLog("[addGroup] SELECT group_id FROM `$table_name` ORDER BY id DESC LIMIT 1 / Execution time: " . $formatted_time, $logFile);
+
         $next_group_number = intval($lastGroupRecord['group_id']) + 1; // 次のgroup_id
         
         for ($rank = 0; $rank < $rank_count; $rank++) {
+            $add_group_start_time = microtime(true);
+
             $sql = "INSERT INTO `$table_name` (group_id, rank) VALUES (:group_id, :rank)";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':group_id', $next_group_number, PDO::PARAM_INT);
             $stmt->bindParam(':rank', $rank, PDO::PARAM_INT);
             $stmt->execute();
+
+            $add_group_end_time = microtime(true);
+            $formatted_time = number_format(($add_group_end_time - $add_group_start_time) * 1000, 3) . " ms";
+            writeLog("[addGroup] INSERT INTO `$table_name` (group_id, rank) VALUES (:group_id, :rank) / Execution time: " . $formatted_time, $logFile);
         }
 
         // ジョブ全体のstatusを確認
+        $check_job_status_start_time = microtime(true);
+
         $checkSql = "SELECT COUNT(*) AS total, 
                             SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END) AS has_zero 
                      FROM `$table_name`";
@@ -512,15 +538,25 @@ function addGroup($job_id) {
         $checkStmt->execute();
         $result = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
+        $check_job_status_end_time = microtime(true);
+        $formatted_time = number_format(($check_job_status_end_time - $check_job_status_start_time) * 1000, 3) . " ms";
+        writeLog("[addGroup] SELECT COUNT(*) AS total, SUM(...) FROM `$table_name` / Execution time: " . $formatted_time, $logFile);
+
         // 条件に応じて table_registry を更新
         if ($result['total'] > 0) {
             $newStatus = ($result['has_zero'] == $result['total']) ? 0 : 1;
+
+            $update_registry_start_time = microtime(true);
 
             $updateRegistrySql = "UPDATE table_registry SET status = :status WHERE id = :job_id";
             $updateStmt = $pdo->prepare($updateRegistrySql);
             $updateStmt->bindValue(':status', $newStatus, PDO::PARAM_INT);
             $updateStmt->bindParam(':job_id', $job_id, PDO::PARAM_INT);
             $updateStmt->execute();
+
+            $update_registry_end_time = microtime(true);
+            $formatted_time = number_format(($update_registry_end_time - $update_registry_start_time) * 1000, 3) . " ms";
+            writeLog("[addGroup] UPDATE table_registry SET status = :status WHERE id = :job_id / Execution time: " . $formatted_time, $logFile);
         }
 
         $pdo->commit();
