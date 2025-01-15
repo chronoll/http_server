@@ -24,7 +24,7 @@ writeLog("Program started", $logFile);
 // client_idの検証
 $get_client_id_start_time = microtime(true);
 
-$expected_client_id = getClientID($job_id, $sub_job_id);
+$expected_client_id = getClientID($job_id, $sub_job_id, $logFile);
 
 $get_client_id_end_time = microtime(true);
 $formatted_time = number_format(($get_client_id_end_time - $get_client_id_start_time) * 1000, 3) . " ms";
@@ -70,7 +70,15 @@ $write_file_start_time = microtime(true);
 if (file_put_contents($filepath, $data) !== false) {
     http_response_code(200);
     writeLog("File saved successfully: " . $filepath, $logFile);
-    $result = updateStatus($job_id, $sub_job_id, $client_id);
+
+    // updateStatusによりDB状態更新
+    $update_status_start_time = microtime(true);
+
+    $result = updateStatus($job_id, $sub_job_id, $client_id, $logFile);
+
+    $update_status_end_time = microtime(true);
+    $formatted_time = number_format(($update_status_end_time - $update_status_start_time) * 1000, 3) . " ms";
+    writeLog("updateStatus completed. Execution time: " . $formatted_time, $logFile);
 } else {
     http_response_code(500);
     writeLog("Failed to save file: " . $filepath, $logFile);
@@ -86,7 +94,7 @@ $isGroupCompleted = true;
 // グループ内の全サブジョブの状態を取得
 $get_group_status_start_time = microtime(true);
 
-$groupStatus = getGroupStatus($job_id, $group_id);
+$groupStatus = getGroupStatus($job_id, $group_id, $logFile);
 
 $get_group_status_end_time = microtime(true);
 $formatted_time = number_format(($get_group_status_end_time - $get_group_status_start_time) * 1000, 3) . " ms";

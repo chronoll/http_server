@@ -19,7 +19,7 @@ writeLog("Program started", $logFile);
 // 配布するジョブ情報を取得
 $distribute_start_time = microtime(true);
 
-$result = distributeJob($client_id);
+$result = distributeJob($client_id, $logFile);
 
 $distribute_end_time = microtime(true);
 $formatted_time = number_format(($distribute_end_time - $distribute_start_time) * 1000, 3) . " ms";
