@@ -139,7 +139,7 @@ function getGroupStatus($job_id, $group_id, $logFile) {
         // テーブル名の取得
         $get_table_name_start_time = microtime(true);
 
-        $getTableNameSql = "SELECT table_name FROM table_registry WHERE id = :job_id";
+        $getTableNameSql = "SELECT table_name, rank_count FROM table_registry WHERE id = :job_id";
         $getTableNameStmt = $pdo->prepare($getTableNameSql);
         $getTableNameStmt->bindParam(":job_id", $job_id, PDO::PARAM_INT);
         $getTableNameStmt->execute();
@@ -156,6 +156,7 @@ function getGroupStatus($job_id, $group_id, $logFile) {
         }
 
         $table_name = $table_registry_record['table_name'];
+        $rank_count = $table_registry_record['rank_count'];
 
         // 指定groupの全statusを取得
         $get_group_status_start_time = microtime(true);
@@ -176,7 +177,11 @@ function getGroupStatus($job_id, $group_id, $logFile) {
             exit;
         }
 
-        return $results;
+        return [
+            'status_list' => $results,
+            'rank_count' => $rank_count
+        ];
+        
     } catch(PDOException $e) {
         http_response_code(500);
         echo 'Connection failed: ' . $e->getMessage();

@@ -94,13 +94,13 @@ $isGroupCompleted = true;
 // グループ内の全サブジョブの状態を取得
 $get_group_status_start_time = microtime(true);
 
-$groupStatus = getGroupStatus($job_id, $group_id, $logFile);
+$groupStatusResult = getGroupStatus($job_id, $group_id, $logFile);
 
 $get_group_status_end_time = microtime(true);
 $formatted_time = number_format(($get_group_status_end_time - $get_group_status_start_time) * 1000, 3) . " ms";
 writeLog("getGroupStatus completed. Execution time: " . $formatted_time, $logFile);
 
-foreach ($groupStatus as $status) {
+foreach ($groupStatusResult['status_list'] as $status) {
     if ($status['status'] != SubJobStatus::ResultReceived) {
         $isGroupCompleted = false;
         writeLog("Group $group_id is not completed yet.", $logFile);
@@ -117,7 +117,7 @@ if ($isGroupCompleted) {
         "http://localhost/http_server/merge.php?job_id=%s&group_id=%s&rank=%s",
         urlencode($job_id),
         urlencode($group_id),
-        urlencode(3) // TODO: 並列数を動的に変える
+        urlencode($groupStatusResult['rank_count']) // TODO: 並列数を動的に変える
     );
     
     $ch = curl_init();
