@@ -10,6 +10,7 @@ if (isset($_GET['ID']) && isset($_GET['GROUP']) && isset($_GET['RANK']) && isset
     $rank = $_GET['RANK'];
     $job_id = $_GET['JOB_ID'];
     $sub_job_id = $_GET['SUB_JOB_ID'];
+    $rank_count = $_GET['RANK_COUNT'];
 } else {
     http_response_code(400); // Bad Request
     echo "No client_id specified.";
@@ -100,7 +101,7 @@ $get_group_status_end_time = microtime(true);
 $formatted_time = number_format(($get_group_status_end_time - $get_group_status_start_time) * 1000, 3) . " ms";
 writeLog("getGroupStatus completed. Execution time: " . $formatted_time, $logFile);
 
-foreach ($groupStatusResult['status_list'] as $status) {
+foreach ($groupStatusResult as $status) {
     if ($status['status'] != SubJobStatus::ResultReceived) {
         $isGroupCompleted = false;
         writeLog("Group $group_id is not completed yet.", $logFile);
@@ -117,7 +118,7 @@ if ($isGroupCompleted) {
         "http://localhost/http_server/merge.php?job_id=%s&group_id=%s&rank=%s",
         urlencode($job_id),
         urlencode($group_id),
-        urlencode($groupStatusResult['rank_count']) // TODO: 並列数を動的に変える
+        urlencode($rank_count) // TODO: 並列数を動的に変える
     );
     
     $ch = curl_init();

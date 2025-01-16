@@ -46,7 +46,8 @@ if (file_exists($filename)) {
         'MPI-Rank' => $result['rank'],
         'Group-ID' => $result['group_id'],
         'Job-ID' => $result['job_id'],
-        'Sub-Job-ID' => $result['sub_job_id']
+        'Sub-Job-ID' => $result['sub_job_id'],
+        'Rank-Count' => $result['rank_count'],
     ];
 
     writeLog("Sending headers:", $logFile);
