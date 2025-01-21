@@ -83,7 +83,7 @@ function distributeJob($client_id, $logFile) {
 
         $update_status_end_time = microtime(true);
         $formatted_time = number_format(($update_status_end_time - $update_status_start_time) * 1000, 3) . " ms";
-        writeLog("[distributeJob] UPDATE `$table_name` SET status = :status, client = :client_id WHERE id = :sub_job_id / Execution time: " . $formatted_time, $logFile);
+        writeLog("[distributeJob] UPDATE_MATRIX_STATUS / Execution time: " . $formatted_time, $logFile);
 
         // 初回配布時はtable_registryのstatus=1に更新
         if ($sub_job_id == 1) {
@@ -250,7 +250,7 @@ function updateStatus($job_id, $sub_job_id, $client_id, $logFile) {
 
         $check_sub_job_end_time = microtime(true);
         $formatted_time = number_format(($check_sub_job_end_time - $check_sub_job_start_time) * 1000, 3) . " ms";
-        writeLog("[updateStatus] SELECT COUNT(*) AS total, SUM(...) FROM `$table_name` / Execution time: " . $formatted_time, $logFile);
+        writeLog("[updateStatus] SELECT COUNT_RECORDS FROM `$table_name` / Execution time: " . $formatted_time, $logFile);
 
         // 3. 条件に応じて table_registry の更新
         if ($checkResult['total'] > 0) {
@@ -375,7 +375,7 @@ function resetGroupStatus($job_id, $group_id, $logFile) {
 
         $check_job_status_end_time = microtime(true);
         $formatted_time = number_format(($check_job_status_end_time - $check_job_status_start_time) * 1000, 3) . " ms";
-        writeLog("[resetGroupStatus] SELECT COUNT(*) AS total, SUM(...) FROM `$table_name` / Execution time: " . $formatted_time, $logFile);
+        writeLog("[resetGroupStatus] SELECT COUNT_RECORDS FROM `$table_name` / Execution time: " . $formatted_time, $logFile);
 
         // 条件に応じて table_registry を更新
         if ($result['total'] > 0) {
@@ -541,7 +541,7 @@ function addGroup($job_id, $logFile) {
 
         $check_job_status_end_time = microtime(true);
         $formatted_time = number_format(($check_job_status_end_time - $check_job_status_start_time) * 1000, 3) . " ms";
-        writeLog("[addGroup] SELECT COUNT(*) AS total, SUM(...) FROM `$table_name` / Execution time: " . $formatted_time, $logFile);
+        writeLog("[addGroup] SELECT COUNT_RECORDS FROM `$table_name` / Execution time: " . $formatted_time, $logFile);
 
         // 条件に応じて table_registry を更新
         if ($result['total'] > 0) {
