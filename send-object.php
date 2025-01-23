@@ -1,5 +1,6 @@
 <?php
 $program_start_time = microtime(true);
+$program_start_timestamp = date('Y-m-d H:i:s.u');
 
 require_once 'handler.php';
 require_once 'common.php';
@@ -14,7 +15,7 @@ $client_id = $_GET['ID'];
 $logFile = __DIR__ . '/logs/send_object_' . $client_id . ".log";
 
 writeSeparator($logFile);
-writeLog("Program started", $logFile);
+writeLog("Program started at $program_start_timestamp", $logFile);
 
 // 配布するジョブ情報を取得
 $distribute_start_time = microtime(true);

@@ -1,5 +1,6 @@
 <?php
 $program_start_time = microtime(true);
+$program_start_timestamp = date('Y-m-d H:i:s.u');
 
 require_once 'handler.php';
 require_once 'common.php';
@@ -20,7 +21,7 @@ if (isset($_GET['ID']) && isset($_GET['GROUP']) && isset($_GET['RANK']) && isset
 $logFile = __DIR__ . '/logs/receive_result_' . $client_id . ".log";
 
 writeSeparator($logFile);
-writeLog("Program started", $logFile);
+writeLog("Program started at $program_start_timestamp", $logFile);
 
 // client_idの検証
 $get_client_id_start_time = microtime(true);
