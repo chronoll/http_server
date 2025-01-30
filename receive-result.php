@@ -1,6 +1,5 @@
 <?php
 $program_start_time = microtime(true);
-$program_start_timestamp = date('Y-m-d H:i:s.u');
 
 require_once 'handler.php';
 require_once 'common.php';
@@ -21,7 +20,9 @@ if (isset($_GET['ID']) && isset($_GET['GROUP']) && isset($_GET['RANK']) && isset
 $logFile = __DIR__ . '/logs/receive_result_' . $client_id . ".log";
 
 writeSeparator($logFile);
-writeLog("Program started at $program_start_timestamp", $logFile);
+
+$dtStr = date("Y-m-d H:i:s") . "." . substr(explode(".", ($program_start_time . ""))[1], 0, 4);
+writeLog("Program started at $dtStr", $logFile);
 
 // client_idの検証
 $get_client_id_start_time = microtime(true);
@@ -116,7 +117,8 @@ if ($isGroupCompleted) {
     $merge_request_start_time = microtime(true);
 
     $url = sprintf(
-        "http://localhost/http_server/merge.php?job_id=%s&group_id=%s&rank=%s",
+        // "http://localhost/http_server/merge.php?job_id=%s&group_id=%s&rank=%s",
+        "http://localhost/http_server/merge-matrix.php?job_id=%s&group_id=%s&rank_count=%s",
         urlencode($job_id),
         urlencode($group_id),
         urlencode($rank_count) // TODO: 並列数を動的に変える

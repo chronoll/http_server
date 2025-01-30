@@ -5,7 +5,7 @@ $program_start_time = microtime(true);
 require_once 'handler.php';
 require_once 'common.php';
 
-$REQUIRED_COUNT = 1;
+$REQUIRED_COUNT = 3;
 
 // GET変数の取得
 $job = isset($_GET['job_id']) ? intval($_GET['job_id']) : null; // job_idを取得

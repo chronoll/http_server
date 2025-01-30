@@ -1,5 +1,5 @@
 <?php
-if (!isset($_GET['job_id']) || !isset($_GET['group_id']) || !isset($_GET['rank'])) {
+if (!isset($_GET['job_id']) || !isset($_GET['group_id']) || !isset($_GET['rank_count'])) {
     http_response_code(400);
     echo "Missing required GET variables.";
     exit;
@@ -7,7 +7,7 @@ if (!isset($_GET['job_id']) || !isset($_GET['group_id']) || !isset($_GET['rank']
 
 $job = intval($_GET['job_id']);
 $group = intval($_GET['group_id']);
-$rank = intval($_GET['rank']);
+$rank = intval($_GET['rank_count']);
 
 $mergedFileName = "merged";
 

@@ -9,7 +9,7 @@ $job_id = $_GET['job_id'];
 $sub_job_id = $_GET['sub_job_id'];
 $group_id = $_GET['group_id'];
 $client_id = $_GET['client_id'];
-$TIMEOUT = 3;
+$TIMEOUT = 5;
 
 ignore_user_abort(true); // クライアント切断後もスクリプト実行を続ける
 header("Content-Length: 0"); // 空のレスポンス
