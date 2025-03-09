@@ -18,10 +18,6 @@ try {
         $pdo->exec($truncateSql);
     }
 
-    // progress レコードを削除, AUTO_INCREMENT をリセット
-    $sql = "TRUNCATE TABLE progress";
-    $pdo->exec($sql);
-
     // 外部キー制約を再び有効化
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
