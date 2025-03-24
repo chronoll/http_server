@@ -1,4 +1,6 @@
-# 分散計算システム構成図
+# http_server
+xamppのhtdocsに当たる部分に配置する (/opt/lampp/htdocs など)
+apacheサーバの処理を記述する
 
 ## HTTPリクエストで動作するプログラム
 
