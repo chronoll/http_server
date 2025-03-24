@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分散計算システム構成図</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+            border-left: 5px solid #3498db;
+            padding-left: 10px;
+        }
+        h3 {
+            color: #16a085;
+        }
+        .module {
+            background-color: #ecf0f1;
+            border-left: 3px solid #3498db;
+            margin: 15px 0;
+            padding: 10px 15px;
+            border-radius: 3px;
+        }
+        .module h4 {
+            margin-top: 0;
+            color: #2980b9;
+        }
+        .module p {
+            margin-bottom: 5px;
+        }
+        .submodule {
+            margin-left: 25px;
+            padding-left: 15px;
+            border-left: 2px solid #bdc3c7;
+        }
+        .library {
+            background-color: #e8f4fc;
+            padding: 5px 10px;
+            margin-top: 5px;
+            border-radius: 3px;
+        }
+        .binary {
+            background-color: #eafaf1;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>分散計算システム構成図</h1>
+
+    <h2>HTTPリクエストで動作するプログラム</h2>
+    
+    <div class="module">
+        <h4>send-object.php</h4>
+        <p>配布リクエストを受け取り、次に配布するジョブのバイナリを出力(送信)する</p>
+    </div>
+    
+    <div class="module">
+        <h4>receive-result.php</h4>
+        <p>計算結果ファイルを受信して格納し、DBに格納された状態を更新する</p>
+    </div>
+
+    <h2>上記PHPから利用するプログラム</h2>
+    
+    <h3>データベース・共通機能</h3>
+    <div class="module">
+        <h4>handler.php</h4>
+        <p>DB操作に関する関数群を定義</p>
+    </div>
+    
+    <div class="module">
+        <h4>common.php</h4>
+        <p>共通して利用するコード等を定義</p>
+    </div>
+    
+    <h3>ジョブ管理</h3>
+    <div class="module">
+        <h4>timer.php</h4>
+        <p>指定したグループに対して状態を監視し、一定時間経過後に未完了のサブジョブがある場合は状態をリセット・結果ファイル削除</p>
+    </div>
+    
+    <h3>計算結果処理</h3>
+    <div class="module">
+        <h4>計算結果のマージ</h4>
+        <div class="submodule">
+            <div class="library">
+                <h5>merge.php</h5>
+                <p>[EPプログラム用] 各ワーカからの結果ファイルから、計算結果の部分を抜き出して別ファイルに書き出し</p>
+            </div>
+            
+            <div class="library">
+                <h5>merge-matrix.php</h5>
+                <p>[matrixプログラム用] 各ワーカからの結果ファイルから計算結果の部分を抜き出して別ファイルに書き出し</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="module">
+        <h4>多数決</h4>
+        <div class="submodule">
+            <div class="library">
+                <h5>majority.php</h5>
+                <p>マージされた計算結果の内容を比較し、一番多い内容を結果として書き出し</p>
+            </div>
+            
+            <div class="library">
+                <h5>m-first.php</h5>
+                <p>m-first多数決法に基づいて多数決結果を書き出し、必要に応じてDB更新</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="binary">
+        <h4>programs/</h4>
+        <p>配布するバイナリを格納</p>
+    </div>
+</body>
+</html>
